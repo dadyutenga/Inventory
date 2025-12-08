@@ -1,0 +1,97 @@
+<div class="container">
+  <div class="header-section">
+    <h1>Sale Details</h1>
+    <div class="header-actions">
+      <%= link_to "View Laptop", laptop_path(@sale.laptop), class: "btn btn-info" %>
+      <%= link_to "Back to Sales", sales_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <div class="sale-details">
+    <div class="detail-section">
+      <h2>Sale Information</h2>
+      <table class="detail-table">
+        <tr>
+          <th>Invoice Reference</th>
+          <td><%= @sale.invoice_ref || "N/A" %></td>
+        </tr>
+        <tr>
+          <th>Sale Date & Time</th>
+          <td><%= @sale.sold_at.strftime("%B %d, %Y at %I:%M %p") %></td>
+        </tr>
+        <tr>
+          <th>Customer Name</th>
+          <td><%= @sale.sold_to %></td>
+        </tr>
+        <tr>
+          <th>Sale Price</th>
+          <td class="price"><%= number_to_currency(@sale.sale_price) %></td>
+        </tr>
+        <tr>
+          <th>Sold By</th>
+          <td><%= @sale.sold_by.name || @sale.sold_by.email %> (<%= @sale.sold_by.role.humanize %>)</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="detail-section">
+      <h2>Laptop Information</h2>
+      <table class="detail-table">
+        <tr>
+          <th>Laptop</th>
+          <td><%= link_to @sale.laptop.display_name, laptop_path(@sale.laptop) %></td>
+        </tr>
+        <tr>
+          <th>SKU</th>
+          <td><%= @sale.laptop.sku %></td>
+        </tr>
+        <tr>
+          <th>Brand</th>
+          <td><%= @sale.laptop.brand %></td>
+        </tr>
+        <tr>
+          <th>Model</th>
+          <td><%= @sale.laptop.model %></td>
+        </tr>
+        <tr>
+          <th>Serial Number</th>
+          <td><%= @sale.laptop.serial_number %></td>
+        </tr>
+        <tr>
+          <th>Purchase Price</th>
+          <td><%= number_to_currency(@sale.laptop.purchase_price) if @sale.laptop.purchase_price %></td>
+        </tr>
+        <% if @sale.laptop.purchase_price && @sale.sale_price %>
+          <tr>
+            <th>Profit/Loss</th>
+            <td class="<%= @sale.sale_price > @sale.laptop.purchase_price ? 'profit' : 'loss' %>">
+              <%= number_to_currency(@sale.sale_price - @sale.laptop.purchase_price) %>
+              (<%= number_to_percentage(((@sale.sale_price - @sale.laptop.purchase_price) / @sale.laptop.purchase_price * 100), precision: 1) %>)
+            </td>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+.container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.header-actions { display: flex; gap: 10px; }
+.sale-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; }
+.detail-section { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
+.detail-section h2 { margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #007bff; font-size: 20px; }
+.detail-table { width: 100%; border-collapse: collapse; }
+.detail-table th { text-align: left; padding: 12px; background: #f8f9fa; font-weight: 600; width: 40%; border-bottom: 1px solid #dee2e6; }
+.detail-table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+.detail-table tr:last-child th, .detail-table tr:last-child td { border-bottom: none; }
+.detail-table a { color: #007bff; text-decoration: none; }
+.detail-table a:hover { text-decoration: underline; }
+.price { font-weight: bold; color: #28a745; font-size: 18px; }
+.profit { font-weight: bold; color: #28a745; }
+.loss { font-weight: bold; color: #dc3545; }
+.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-info { background: #17a2b8; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+</style>

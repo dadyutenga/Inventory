@@ -1,0 +1,12 @@
+<div class="page-header">
+  <h1>Add New Laptop</h1>
+  <%= link_to "Back to List", laptops_path, class: "btn btn-secondary" %>
+</div>
+
+<%= render "form", laptop: @laptop %>
+
+<style>
+.page-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 20px; }
+.btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-secondary { background: #6c757d; color: white; }
+</style>

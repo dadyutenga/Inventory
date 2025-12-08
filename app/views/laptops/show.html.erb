@@ -1,0 +1,145 @@
+<div class="laptop-show">
+  <div class="header">
+    <h1><%= @laptop.display_name %></h1>
+    <div class="header-actions">
+      <%= link_to "Edit", edit_laptop_path(@laptop), class: "btn btn-warning" %>
+      <%= link_to "Back to List", laptops_path, class: "btn btn-secondary" %>
+      <% if current_user.admin? %>
+        <%= button_to "Delete", laptop_path(@laptop), method: :delete,
+                      data: { turbo_confirm: "Are you sure?" },
+                      class: "btn btn-danger" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Image Gallery -->
+  <% if @laptop.images.attached? %>
+    <div class="image-gallery">
+      <% @laptop.images.each do |image| %>
+        <div class="gallery-item">
+          <%= image_tag image.variant(resize_to_limit: [400, 300]), alt: @laptop.display_name %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="no-images">No images available</div>
+  <% end %>
+
+  <!-- Status Badges -->
+  <div class="status-section">
+    <span class="badge badge-<%= @laptop.status %>"><%= @laptop.status.humanize %></span>
+    <span class="badge badge-<%= @laptop.condition %>"><%= @laptop.condition.humanize %></span>
+  </div>
+
+  <!-- Specifications Sections -->
+  <div class="specs-container">
+    <!-- Basic Information -->
+    <div class="spec-section">
+      <h2>Basic Information</h2>
+      <table class="spec-table">
+        <tr><th>SKU</th><td><%= @laptop.sku %></td></tr>
+        <tr><th>Vendor/Supplier</th><td><%= @laptop.vendor %></td></tr>
+        <tr><th>Brand</th><td><%= @laptop.brand %></td></tr>
+        <tr><th>Model</th><td><%= @laptop.model %></td></tr>
+        <tr><th>Model Number</th><td><%= @laptop.model_number %></td></tr>
+        <tr><th>Serial Number</th><td><%= @laptop.serial_number %></td></tr>
+        <tr><th>Purchase Date</th><td><%= @laptop.purchase_date&.strftime("%B %d, %Y") %></td></tr>
+        <tr><th>Purchase Price</th><td><%= number_to_currency(@laptop.purchase_price) if @laptop.purchase_price %></td></tr>
+        <tr><th>Condition</th><td><%= @laptop.condition.humanize %></td></tr>
+      </table>
+    </div>
+
+    <!-- Hardware Specifications -->
+    <div class="spec-section">
+      <h2>Hardware Specifications</h2>
+      <table class="spec-table">
+        <tr><th>CPU</th><td><%= @laptop.cpu %></td></tr>
+        <tr><th>CPU Generation</th><td><%= @laptop.cpu_generation %></td></tr>
+        <tr><th>GPU</th><td><%= @laptop.gpu %></td></tr>
+        <tr><th>RAM Size</th><td><%= @laptop.ram_size %></td></tr>
+        <tr><th>RAM Type</th><td><%= @laptop.ram_type %></td></tr>
+        <tr><th>Storage Capacity</th><td><%= @laptop.storage_capacity %></td></tr>
+        <tr><th>Storage Type</th><td><%= @laptop.storage_type %></td></tr>
+        <tr><th>Screen Size</th><td><%= @laptop.screen_size %></td></tr>
+        <tr><th>Screen Resolution</th><td><%= @laptop.screen_resolution %></td></tr>
+        <tr><th>Display Type</th><td><%= @laptop.display_type %></td></tr>
+        <tr><th>Keyboard Type</th><td><%= @laptop.keyboard_type %></td></tr>
+        <tr><th>Keyboard Backlight</th><td><%= @laptop.keyboard_backlight ? "Yes" : "No" %></td></tr>
+        <tr><th>Battery Capacity</th><td><%= @laptop.battery_capacity %></td></tr>
+        <tr><th>Webcam</th><td><%= @laptop.webcam ? "Yes" : "No" %></td></tr>
+        <tr><th>Microphone</th><td><%= @laptop.microphone ? "Yes" : "No" %></td></tr>
+        <tr><th>WiFi Type</th><td><%= @laptop.wifi_type %></td></tr>
+        <tr><th>Bluetooth Version</th><td><%= @laptop.bluetooth_version %></td></tr>
+        <tr><th>Ports</th><td><%= simple_format(@laptop.ports) %></td></tr>
+        <tr><th>Weight</th><td><%= @laptop.weight %></td></tr>
+      </table>
+    </div>
+
+    <!-- Software & OS -->
+    <div class="spec-section">
+      <h2>Software & Operating System</h2>
+      <table class="spec-table">
+        <tr><th>Operating System</th><td><%= @laptop.operating_system %></td></tr>
+        <tr><th>License Key</th><td><%= @laptop.license_key %></td></tr>
+      </table>
+    </div>
+
+    <!-- Status & Tracking -->
+    <div class="spec-section">
+      <h2>Status & Tracking</h2>
+      <table class="spec-table">
+        <tr><th>Status</th><td><%= @laptop.status.humanize %></td></tr>
+        <tr><th>Allocated To</th><td><%= @laptop.allocated_to&.name || @laptop.allocated_to&.email %></td></tr>
+        <tr><th>Last Service Date</th><td><%= @laptop.last_service_date&.strftime("%B %d, %Y") %></td></tr>
+        <tr><th>Next Service Due</th><td><%= @laptop.next_service_due&.strftime("%B %d, %Y") %></td></tr>
+        <tr><th>Notes</th><td><%= simple_format(@laptop.notes) %></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sale Information (if sold) -->
+  <% if @laptop.sale %>
+    <div class="sale-section">
+      <h2>Sale Information</h2>
+      <table class="spec-table">
+        <tr><th>Sold To</th><td><%= @laptop.sale.sold_to %></td></tr>
+        <tr><th>Sold By</th><td><%= @laptop.sale.sold_by.name || @laptop.sale.sold_by.email %></td></tr>
+        <tr><th>Sale Date</th><td><%= @laptop.sale.sold_at.strftime("%B %d, %Y %I:%M %p") %></td></tr>
+        <tr><th>Sale Price</th><td><%= number_to_currency(@laptop.sale.sale_price) %></td></tr>
+        <tr><th>Invoice Reference</th><td><%= @laptop.sale.invoice_ref %></td></tr>
+      </table>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.laptop-show { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.header-actions { display: flex; gap: 10px; }
+.image-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-bottom: 30px; background: #f5f5f5; padding: 20px; border-radius: 8px; }
+.gallery-item img { width: 100%; height: auto; border-radius: 4px; border: 2px solid #ddd; }
+.no-images { text-align: center; padding: 40px; background: #f5f5f5; border-radius: 8px; color: #999; margin-bottom: 30px; }
+.status-section { margin-bottom: 30px; }
+.specs-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 30px; }
+.spec-section { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
+.spec-section h2 { margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #007bff; font-size: 20px; }
+.spec-table { width: 100%; border-collapse: collapse; }
+.spec-table th { text-align: left; padding: 10px; background: #f8f9fa; font-weight: 600; width: 40%; border-bottom: 1px solid #dee2e6; }
+.spec-table td { padding: 10px; border-bottom: 1px solid #dee2e6; }
+.spec-table tr:last-child th, .spec-table tr:last-child td { border-bottom: none; }
+.sale-section { margin-top: 30px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; }
+.sale-section h2 { margin: 0 0 15px 0; color: #856404; }
+.badge { display: inline-block; padding: 6px 12px; border-radius: 4px; font-size: 14px; margin-right: 10px; font-weight: 600; }
+.badge-active { background: #28a745; color: white; }
+.badge-sold { background: #6c757d; color: white; }
+.badge-in_repair { background: #ffc107; color: black; }
+.badge-retired { background: #dc3545; color: white; }
+.badge-new_condition { background: #17a2b8; color: white; }
+.badge-used { background: #6c757d; color: white; }
+.badge-refurbished { background: #007bff; color: white; }
+.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-primary { background: #007bff; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-warning { background: #ffc107; color: black; }
+.btn-danger { background: #dc3545; color: white; }
+</style>

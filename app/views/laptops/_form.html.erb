@@ -1,0 +1,321 @@
+<%= form_with(model: laptop, local: true, html: { multipart: true, class: "laptop-form" }) do |form| %>
+  <% if laptop.errors.any? %>
+    <div class="error-messages">
+      <h2><%= pluralize(laptop.errors.count, "error") %> prohibited this laptop from being saved:</h2>
+      <ul>
+        <% laptop.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Basic Information Section -->
+  <div class="form-section">
+    <h2>Basic Information</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :sku, "SKU *" %>
+        <%= form.text_field :sku, required: true, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :serial_number, "Serial Number *" %>
+        <%= form.text_field :serial_number, required: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :vendor, "Vendor/Supplier" %>
+        <%= form.text_field :vendor, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :brand, "Brand *" %>
+        <%= form.text_field :brand, required: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :model, "Model *" %>
+        <%= form.text_field :model, required: true, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :model_number, "Model Number" %>
+        <%= form.text_field :model_number, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :purchase_date, "Purchase Date" %>
+        <%= form.date_field :purchase_date, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :purchase_price, "Purchase Price ($)" %>
+        <%= form.number_field :purchase_price, step: 0.01, min: 0, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :condition, "Condition" %>
+        <%= form.select :condition, 
+                        options_for_select(Laptop.conditions.keys.map { |c| [c.humanize, c] }, laptop.condition),
+                        {}, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :status, "Status" %>
+        <%= form.select :status,
+                        options_for_select(Laptop.statuses.keys.map { |s| [s.humanize, s] }, laptop.status),
+                        {}, class: "form-control" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hardware Specifications Section -->
+  <div class="form-section">
+    <h2>Hardware Specifications</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :cpu, "CPU/Processor" %>
+        <%= form.text_field :cpu, placeholder: "e.g., Intel Core i7-1165G7", class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :cpu_generation, "CPU Generation" %>
+        <%= form.text_field :cpu_generation, placeholder: "e.g., 11th Gen", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :gpu, "GPU/Graphics Card" %>
+        <%= form.text_field :gpu, placeholder: "e.g., Intel Iris Xe Graphics", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :ram_size, "RAM Size" %>
+        <%= form.text_field :ram_size, placeholder: "e.g., 16GB", class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :ram_type, "RAM Type" %>
+        <%= form.text_field :ram_type, placeholder: "e.g., DDR4", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :storage_capacity, "Storage Capacity" %>
+        <%= form.text_field :storage_capacity, placeholder: "e.g., 512GB", class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :storage_type, "Storage Type" %>
+        <%= form.select :storage_type,
+                        options_for_select(["HDD", "SSD", "NVMe SSD", "Hybrid"], laptop.storage_type),
+                        { include_blank: "Select..." }, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :screen_size, "Screen Size" %>
+        <%= form.text_field :screen_size, placeholder: "e.g., 15.6 inches", class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :screen_resolution, "Screen Resolution" %>
+        <%= form.text_field :screen_resolution, placeholder: "e.g., 1920x1080 (Full HD)", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :display_type, "Display Type" %>
+        <%= form.select :display_type,
+                        options_for_select(["IPS", "TN", "OLED", "LED"], laptop.display_type),
+                        { include_blank: "Select..." }, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :keyboard_type, "Keyboard Type" %>
+        <%= form.text_field :keyboard_type, placeholder: "e.g., Chiclet, Mechanical", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :keyboard_backlight, "Keyboard Backlight" %>
+        <%= form.check_box :keyboard_backlight, class: "form-checkbox" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :battery_capacity, "Battery Capacity" %>
+        <%= form.text_field :battery_capacity, placeholder: "e.g., 56Wh", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :webcam, "Webcam" %>
+        <%= form.check_box :webcam, class: "form-checkbox" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :microphone, "Microphone" %>
+        <%= form.check_box :microphone, class: "form-checkbox" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :wifi_type, "WiFi Type" %>
+        <%= form.text_field :wifi_type, placeholder: "e.g., WiFi 6 (802.11ax)", class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :bluetooth_version, "Bluetooth Version" %>
+        <%= form.text_field :bluetooth_version, placeholder: "e.g., 5.1", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group full-width">
+        <%= form.label :ports, "Ports" %>
+        <%= form.text_area :ports, placeholder: "e.g., 2x USB-A 3.0, 1x USB-C Thunderbolt 4, HDMI 2.0, 3.5mm audio jack", rows: 3, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :weight, "Weight" %>
+        <%= form.text_field :weight, placeholder: "e.g., 1.8 kg", class: "form-control" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Software & OS Section -->
+  <div class="form-section">
+    <h2>Software & Operating System</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :operating_system, "Operating System" %>
+        <%= form.text_field :operating_system, placeholder: "e.g., Windows 11 Pro", class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :license_key, "License Key" %>
+        <%= form.text_field :license_key, class: "form-control" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status & Tracking Section -->
+  <div class="form-section">
+    <h2>Status & Tracking</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :allocated_to_id, "Allocated To (User)" %>
+        <%= form.collection_select :allocated_to_id, User.order(:name), :id, :name,
+                                  { include_blank: "Not allocated" }, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :last_service_date, "Last Service Date" %>
+        <%= form.date_field :last_service_date, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :next_service_due, "Next Service Due" %>
+        <%= form.date_field :next_service_due, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group full-width">
+        <%= form.label :notes, "Notes" %>
+        <%= form.text_area :notes, rows: 4, class: "form-control" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Images Section -->
+  <div class="form-section">
+    <h2>Images</h2>
+    
+    <div class="form-row">
+      <div class="form-group full-width">
+        <%= form.label :images, "Upload Images (multiple)" %>
+        <%= form.file_field :images, multiple: true, accept: "image/*", class: "form-control" %>
+        <small class="form-text">You can select multiple images at once</small>
+      </div>
+    </div>
+
+    <% if laptop.images.attached? %>
+      <div class="existing-images">
+        <h3>Existing Images</h3>
+        <div class="image-grid">
+          <% laptop.images.each do |image| %>
+            <div class="image-item">
+              <%= image_tag image.variant(resize_to_limit: [200, 150]) %>
+              <%= button_to "Remove", remove_image_laptop_path(laptop, image_id: image.id),
+                            method: :delete,
+                            data: { turbo_confirm: "Are you sure?" },
+                            class: "btn-remove" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="form-actions">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", laptops_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
+
+<style>
+.laptop-form { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.form-section { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 25px; margin-bottom: 25px; }
+.form-section h2 { margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #007bff; font-size: 20px; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 15px; }
+.form-group { display: flex; flex-direction: column; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label { margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+.form-control { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+.form-control:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+.form-checkbox { width: 20px; height: 20px; margin-top: 5px; }
+.form-text { color: #6c757d; font-size: 12px; margin-top: 5px; }
+.error-messages { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+.error-messages h2 { font-size: 16px; margin: 0 0 10px 0; }
+.error-messages ul { margin: 0; padding-left: 20px; }
+.existing-images { margin-top: 20px; }
+.existing-images h3 { font-size: 16px; margin-bottom: 10px; }
+.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+.image-item { position: relative; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
+.image-item img { width: 100%; height: 150px; object-fit: cover; }
+.btn-remove { position: absolute; top: 5px; right: 5px; background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.form-actions { display: flex; gap: 10px; margin-top: 30px; }
+.btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; font-weight: 600; }
+.btn-primary { background: #007bff; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+@media (max-width: 768px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>

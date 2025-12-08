@@ -1,0 +1,119 @@
+<div class="container">
+  <div class="header-section">
+    <h1>Laptop Inventory</h1>
+    <%= link_to "Add New Laptop", new_laptop_path, class: "btn btn-primary" %>
+  </div>
+
+  <!-- Search and Filter Form -->
+  <div class="filters">
+    <%= form_with url: laptops_path, method: :get, local: true, class: "filter-form" do |f| %>
+      <div class="filter-group">
+        <%= f.text_field :search, placeholder: "Search by brand, model, SKU, or serial...", value: params[:search], class: "form-control" %>
+        
+        <%= f.select :brand, 
+                     options_for_select([["All Brands", ""]] + @brands.map { |b| [b, b] }, params[:brand]),
+                     {}, 
+                     class: "form-control" %>
+        
+        <%= f.select :status,
+                     options_for_select([["All Statuses", ""]] + Laptop.statuses.keys.map { |s| [s.humanize, s] }, params[:status]),
+                     {},
+                     class: "form-control" %>
+        
+        <%= f.submit "Filter", class: "btn btn-secondary" %>
+        <%= link_to "Clear", laptops_path, class: "btn btn-outline" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Laptop Cards Grid -->
+  <div class="laptops-grid" id="laptop_notifications">
+    <% if @laptops.any? %>
+      <% @laptops.each do |laptop| %>
+        <div class="laptop-card">
+          <div class="laptop-image">
+            <% if laptop.images.attached? && laptop.main_image %>
+              <%= image_tag laptop.main_image.variant(resize_to_limit: [300, 200]), alt: laptop.display_name %>
+            <% else %>
+              <div class="no-image">No Image</div>
+            <% end %>
+          </div>
+          
+          <div class="laptop-info">
+            <h3><%= link_to laptop.display_name, laptop_path(laptop) %></h3>
+            
+            <div class="specs-summary">
+              <p><strong>SKU:</strong> <%= laptop.sku %></p>
+              <p><strong>Brand:</strong> <%= laptop.brand %></p>
+              <p><strong>CPU:</strong> <%= laptop.cpu %></p>
+              <p><strong>RAM:</strong> <%= laptop.ram_size %></p>
+              <p><strong>Storage:</strong> <%= laptop.storage_capacity %> <%= laptop.storage_type %></p>
+            </div>
+            
+            <div class="laptop-status">
+              <span class="badge badge-<%= laptop.status %>"><%= laptop.status.humanize %></span>
+              <span class="badge badge-<%= laptop.condition %>"><%= laptop.condition.humanize %></span>
+            </div>
+            
+            <% if laptop.purchase_price %>
+              <p class="price">Purchase Price: $<%= number_with_precision(laptop.purchase_price, precision: 2) %></p>
+            <% end %>
+            
+            <div class="actions">
+              <%= link_to "View", laptop_path(laptop), class: "btn btn-sm btn-info" %>
+              <%= link_to "Edit", edit_laptop_path(laptop), class: "btn btn-sm btn-warning" %>
+              <% if current_user.admin? %>
+                <%= button_to "Delete", laptop_path(laptop), method: :delete, 
+                              data: { turbo_confirm: "Are you sure?" }, 
+                              class: "btn btn-sm btn-danger" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="no-results">
+        <p>No laptops found. <%= link_to "Add your first laptop", new_laptop_path %></p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.filters { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+.filter-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.filter-group { display: flex; gap: 10px; flex: 1; }
+.form-control { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; }
+.laptops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.laptop-card { background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.laptop-image { height: 200px; overflow: hidden; background: #f0f0f0; display: flex; align-items: center; justify-content: center; }
+.laptop-image img { width: 100%; height: 100%; object-fit: cover; }
+.no-image { color: #999; font-size: 14px; }
+.laptop-info { padding: 15px; }
+.laptop-info h3 { margin: 0 0 10px 0; font-size: 18px; }
+.laptop-info h3 a { color: #333; text-decoration: none; }
+.laptop-info h3 a:hover { color: #007bff; }
+.specs-summary p { margin: 5px 0; font-size: 14px; }
+.laptop-status { margin: 10px 0; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px; }
+.badge-active { background: #28a745; color: white; }
+.badge-sold { background: #6c757d; color: white; }
+.badge-in_repair { background: #ffc107; color: black; }
+.badge-retired { background: #dc3545; color: white; }
+.badge-new_condition { background: #17a2b8; color: white; }
+.badge-used { background: #6c757d; color: white; }
+.badge-refurbished { background: #007bff; color: white; }
+.price { font-weight: bold; color: #28a745; margin: 10px 0; }
+.actions { display: flex; gap: 5px; margin-top: 10px; }
+.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-primary { background: #007bff; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-info { background: #17a2b8; color: white; }
+.btn-warning { background: #ffc107; color: black; }
+.btn-danger { background: #dc3545; color: white; }
+.btn-outline { background: white; color: #6c757d; border: 1px solid #6c757d; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.no-results { text-align: center; padding: 40px; background: #f5f5f5; border-radius: 8px; }
+</style>

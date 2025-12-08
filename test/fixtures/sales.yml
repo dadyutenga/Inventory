@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  laptop: one
+  sold_by: one
+  sold_to: MyString
+  sold_at: 2025-12-08 04:29:07
+  sale_price: 9.99
+  invoice_ref: MyString
+
+two:
+  laptop: two
+  sold_by: two
+  sold_to: MyString
+  sold_at: 2025-12-08 04:29:07
+  sale_price: 9.99
+  invoice_ref: MyString

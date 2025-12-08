@@ -1,0 +1,58 @@
+<div class="container">
+  <div class="header-section">
+    <h1>Sales History</h1>
+    <%= link_to "Record New Sale", new_sale_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @sales.any? %>
+    <table class="sales-table">
+      <thead>
+        <tr>
+          <th>Invoice Ref</th>
+          <th>Laptop</th>
+          <th>Sold To</th>
+          <th>Sold By</th>
+          <th>Sale Date</th>
+          <th>Sale Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @sales.each do |sale| %>
+          <tr>
+            <td><%= sale.invoice_ref || "N/A" %></td>
+            <td><%= link_to sale.laptop.display_name, laptop_path(sale.laptop) %></td>
+            <td><%= sale.sold_to %></td>
+            <td><%= sale.sold_by.name || sale.sold_by.email %></td>
+            <td><%= sale.sold_at.strftime("%B %d, %Y") %></td>
+            <td class="price">$<%= number_with_precision(sale.sale_price, precision: 2) %></td>
+            <td>
+              <%= link_to "View", sale_path(sale), class: "btn btn-sm btn-info" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="no-results">
+      <p>No sales recorded yet. <%= link_to "Record your first sale", new_sale_path %></p>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.sales-table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.sales-table thead { background: #007bff; color: white; }
+.sales-table th, .sales-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+.sales-table tbody tr:hover { background: #f8f9fa; }
+.sales-table a { color: #007bff; text-decoration: none; }
+.sales-table a:hover { text-decoration: underline; }
+.price { font-weight: bold; color: #28a745; }
+.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-primary { background: #007bff; color: white; }
+.btn-info { background: #17a2b8; color: white; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.no-results { text-align: center; padding: 40px; background: #f5f5f5; border-radius: 8px; }
+</style>
