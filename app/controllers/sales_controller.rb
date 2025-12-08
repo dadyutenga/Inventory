@@ -1,5 +1,5 @@
 class SalesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user
   before_action :set_sale, only: [ :show ]
 
   def index

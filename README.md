@@ -7,7 +7,7 @@ A comprehensive laptop inventory management web application built with **Ruby on
 - **Ruby 3.3.1**
 - **Rails 8.1.1**
 - **PostgreSQL** - Primary database
-- **Devise** - Authentication with Admin/Employee roles
+- **JWT + bcrypt** - Token-based authentication with Admin/Employee roles (see [JWT_MIGRATION.md](JWT_MIGRATION.md))
 - **Solid Queue** - Background job processing (no Redis)
 - **Solid Cache** - High-performance caching (no Redis)
 - **Solid Cable** - Action Cable for WebSockets (no Redis)
@@ -20,10 +20,14 @@ A comprehensive laptop inventory management web application built with **Ruby on
 ## ✨ Features
 
 ### 1. User Management & Authentication
+- **JWT-based authentication** (stateless, API-friendly)
 - **Role-based access control:**
   - **Admin**: Full CRUD operations, reports, cache management
   - **Employee**: Add laptops, update status, view inventory
-- Secure authentication via Devise
+- Secure password hashing with bcrypt
+- 24-hour token expiration
+- Browser and API support
+- See [JWT_MIGRATION.md](JWT_MIGRATION.md) for authentication details
 
 ### 2. Comprehensive Laptop Inventory
 Each laptop record stores extensive specifications:
