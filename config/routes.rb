@@ -3,14 +3,15 @@ Rails.application.routes.draw do
   get "login", to: "auth#login_page", as: :login
   post "login", to: "auth#login"
   delete "logout", to: "auth#logout", as: :logout
-  get "register", to: "users#register_page", as: :register
-  post "register", to: "users#create"
 
   # Devise routes are disabled - using JWT instead
   # devise_for :users
 
   # Root path
   root "dashboard#index"
+
+  # Users (admin-only management)
+  resources :users, only: [ :index, :new, :create, :edit, :update, :destroy ]
 
   # Dashboard
   resources :dashboard, only: [ :index ] do
