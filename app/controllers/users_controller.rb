@@ -18,6 +18,7 @@ class UsersController < ApplicationController
     @user.role ||= :employee # Default role
 
     if @user.save
+      log_activity(action_type: "user_created", record: @user, new_values: @user.attributes)
       respond_to do |format|
         format.json { render json: { user: user_response(@user) }, status: :created }
         format.html { redirect_to users_path, notice: "User created successfully" }
@@ -40,6 +41,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/:id
   def update
     if @user.update(user_params)
+      log_activity(action_type: "user_updated", record: @user, new_values: @user.attributes)
       respond_to do |format|
         format.json { render json: { user: user_response(@user) }, status: :ok }
         format.html { redirect_to users_path, notice: "User updated successfully" }
@@ -66,6 +68,7 @@ class UsersController < ApplicationController
       end
     else
       @user.destroy
+      log_activity(action_type: "user_deleted", record: @user, old_values: @user.attributes)
       respond_to do |format|
         format.json { render json: { message: "User deleted successfully" }, status: :ok }
         format.html { redirect_to users_path, notice: "User deleted successfully" }

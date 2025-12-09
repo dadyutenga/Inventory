@@ -27,6 +27,11 @@ class ProductsController < ApplicationController
 
     if @product.save
       ProcessProductImagesJob.perform_later(@product.id) if @product.images.attached?
+      log_activity(
+        action_type: "product_created",
+        record: @product,
+        new_values: serialized_record(@product)
+      )
       redirect_to @product, notice: "Product was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -39,6 +44,8 @@ class ProductsController < ApplicationController
 
   def update
     equipment_attrs = equipment_params(@product.category)
+    product_old_changes = @product.attributes.deep_dup
+    equipment_old_changes = @product.productable&.attributes&.deep_dup
 
     success = ActiveRecord::Base.transaction do
       @product.productable.update!(equipment_attrs) if equipment_attrs.present?
@@ -47,6 +54,12 @@ class ProductsController < ApplicationController
 
     if success
       ProcessProductImagesJob.perform_later(@product.id) if @product.images.attached?
+      log_activity(
+        action_type: "product_updated",
+        record: @product,
+        old_values: serialized_changes(product_old_changes, equipment_old_changes),
+        new_values: serialized_record(@product)
+      )
       redirect_to @product, notice: "Product was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -56,13 +69,16 @@ class ProductsController < ApplicationController
   end
 
   def destroy
+    snapshot = serialized_record(@product)
     @product.destroy
+    log_activity(action_type: "product_deleted", record: @product, old_values: snapshot)
     redirect_to products_url, notice: "Product was successfully deleted."
   end
 
   def remove_image
     image = @product.images.find(params[:image_id])
     image.purge
+    log_activity(action_type: "product_image_removed", record: @product, new_values: { image_id: image.id })
     redirect_to edit_product_path(@product), notice: "Image removed successfully."
   end
 
@@ -147,5 +163,15 @@ class ProductsController < ApplicationController
     return if current_user.admin?
 
     redirect_to products_path, alert: "Only admins can perform this action."
+  end
+
+  def serialized_record(record)
+    return {} unless record
+
+    record.attributes.slice(*record.attribute_names)
+  end
+
+  def serialized_changes(product_old_attrs, equipment_old_attrs)
+    { product: product_old_attrs, equipment: equipment_old_attrs }.compact
   end
 end

@@ -1,0 +1,76 @@
+<div class="container">
+  <div class="header-section">
+    <h1>Activity Logs</h1>
+    <p class="subhead">Recent user actions (latest 500)</p>
+  </div>
+
+  <div class="filters">
+    <%= form_with url: activity_logs_path, method: :get, local: true, class: "filter-form" do |f| %>
+      <div class="filter-group">
+        <%= f.collection_select :user_id, User.order(:name), :id, :name, { include_blank: "All Users" }, class: "form-control" %>
+        <%= f.text_field :entity_type, placeholder: "Entity type (e.g., Product)", value: params[:entity_type], class: "form-control" %>
+        <%= f.text_field :entity_id, placeholder: "Entity ID", value: params[:entity_id], class: "form-control" %>
+        <%= f.text_field :action_type, placeholder: "Action type", value: params[:action_type], class: "form-control" %>
+        <%= f.date_field :from_date, value: params[:from_date], class: "form-control" %>
+        <%= f.date_field :to_date, value: params[:to_date], class: "form-control" %>
+        <%= f.submit "Filter", class: "btn btn-secondary" %>
+        <%= link_to "Clear", activity_logs_path, class: "btn btn-outline" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="logs-table-wrapper">
+    <% if @logs.any? %>
+      <table class="logs-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Old Values</th>
+            <th>New Values</th>
+            <th>IP</th>
+            <th>User Agent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @logs.each do |log| %>
+            <tr>
+              <td><%= log.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+              <td><%= log.user&.name || log.user&.email %></td>
+              <td><%= log.action_type %></td>
+              <td><%= "#{log.entity_type}##{log.entity_id}" %></td>
+              <td><pre><%= JSON.pretty_generate(log.old_values || {}) %></pre></td>
+              <td><pre><%= JSON.pretty_generate(log.new_values || {}) %></pre></td>
+              <td><%= log.ip_address %></td>
+              <td class="user-agent"><%= truncate(log.user_agent, length: 60) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="no-results">No logs found for the selected filters.</div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.header-section { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+.subhead { color: #6c757d; margin: 0; }
+.filters { background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.filter-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: center; }
+.filter-group { display: contents; }
+.form-control { padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; }
+.btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 14px; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-outline { background: white; color: #6c757d; border: 1px solid #6c757d; }
+.logs-table-wrapper { overflow-x: auto; }
+.logs-table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.logs-table th, .logs-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+.logs-table thead { background: #007bff; color: white; }
+.logs-table pre { margin: 0; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+.no-results { padding: 20px; text-align: center; background: #f5f5f5; border-radius: 8px; }
+.user-agent { max-width: 240px; }
+</style>

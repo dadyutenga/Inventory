@@ -36,6 +36,9 @@
             <li><%= link_to "Inventory", products_path, class: current_page?(products_path) ? "active" : "" %></li>
             <li><%= link_to "Sales", sales_path, class: current_page?(sales_path) ? "active" : "" %></li>
             <% if current_user.admin? %>
+              <li><%= link_to "Activity Logs", activity_logs_path, class: current_page?(activity_logs_path) ? "active" : "" %></li>
+            <% end %>
+            <% if current_user.admin? %>
               <li><%= link_to "Users", users_path, class: current_page?(users_path) ? "active" : "" %></li>
               <li class="admin-badge">Admin</li>
             <% else %>

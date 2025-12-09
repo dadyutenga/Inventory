@@ -17,6 +17,11 @@ class SalesController < ApplicationController
     @sale.sold_at = Time.current if @sale.sold_at.blank?
 
     if @sale.save
+      log_activity(
+        action_type: "sale_created",
+        record: @sale,
+        new_values: @sale.attributes
+      )
       redirect_to @sale, notice: "Sale was successfully recorded."
     else
       @products = Product.where.not(status: :sold).order(:name)

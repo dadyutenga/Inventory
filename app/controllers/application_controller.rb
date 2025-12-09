@@ -54,6 +54,17 @@ class ApplicationController < ActionController::Base
     raise ExceptionHandler::InvalidToken
   end
 
+  def log_activity(action_type:, record:, old_values: nil, new_values: nil)
+    ActivityLogger.log(
+      user: current_user,
+      action_type: action_type,
+      record: record,
+      old_values: old_values,
+      new_values: new_values,
+      request: request
+    )
+  end
+
   # Check if request is JSON
   def json_request?
     request.format.json?

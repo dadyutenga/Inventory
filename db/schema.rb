@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_09_174000) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_09_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,23 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_09_174000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "activity_logs", force: :cascade do |t|
+    t.string "action_type", null: false
+    t.datetime "created_at", null: false
+    t.bigint "entity_id", null: false
+    t.string "entity_type", null: false
+    t.string "ip_address"
+    t.jsonb "new_values"
+    t.jsonb "old_values"
+    t.datetime "updated_at", null: false
+    t.text "user_agent"
+    t.bigint "user_id", null: false
+    t.index ["action_type"], name: "index_activity_logs_on_action_type"
+    t.index ["created_at"], name: "index_activity_logs_on_created_at"
+    t.index ["entity_type", "entity_id"], name: "index_activity_logs_on_entity_type_and_entity_id"
+    t.index ["user_id"], name: "index_activity_logs_on_user_id"
   end
 
   create_table "blacklisted_tokens", force: :cascade do |t|
@@ -181,6 +198,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_09_174000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activity_logs", "users"
   add_foreign_key "products", "users", column: "allocated_to_id"
   add_foreign_key "sales", "products"
   add_foreign_key "sales", "users", column: "sold_by_id"
