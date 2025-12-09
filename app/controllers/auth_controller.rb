@@ -11,6 +11,9 @@ class AuthController < ApplicationController
     user = User.find_by(email: params[:email]&.downcase)
 
     if user&.authenticate(params[:password])
+      # Delete old cookie if exists to prevent blacklist conflicts
+      cookies.delete(:auth_token) if cookies.encrypted[:auth_token]
+
       token = JsonWebToken.encode(user_id: user.id)
 
       respond_to do |format|

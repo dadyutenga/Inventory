@@ -8,6 +8,7 @@ class JsonWebToken
   # Encode payload to JWT token
   def self.encode(payload, exp = EXPIRATION_TIME)
     payload[:exp] = exp
+    payload[:jti] = SecureRandom.uuid  # Unique token ID
     JWT.encode(payload, SECRET_KEY, "HS256")
   end
 
