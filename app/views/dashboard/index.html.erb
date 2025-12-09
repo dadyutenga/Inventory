@@ -11,39 +11,39 @@
     <div class="stat-card">
       <div class="stat-icon" style="background: #007bff;">📊</div>
       <div class="stat-info">
-        <h3><%= @stats[:total_laptops] %></h3>
-        <p>Total Laptops</p>
+        <h3><%= @stats[:total_products] %></h3>
+        <p>Total Products</p>
       </div>
     </div>
 
     <div class="stat-card">
       <div class="stat-icon" style="background: #28a745;">✅</div>
       <div class="stat-info">
-        <h3><%= @stats[:active_laptops] %></h3>
-        <p>Active Laptops</p>
+        <h3><%= @stats[:available_products] %></h3>
+        <p>Available</p>
       </div>
     </div>
 
     <div class="stat-card">
       <div class="stat-icon" style="background: #6c757d;">💼</div>
       <div class="stat-info">
-        <h3><%= @stats[:sold_laptops] %></h3>
-        <p>Sold Laptops</p>
+        <h3><%= @stats[:sold_products] %></h3>
+        <p>Sold Products</p>
       </div>
     </div>
 
     <div class="stat-card">
       <div class="stat-icon" style="background: #ffc107;">🔧</div>
       <div class="stat-info">
-        <h3><%= @stats[:in_repair_laptops] %></h3>
-        <p>In Repair</p>
+        <h3><%= @stats[:in_service_products] %></h3>
+        <p>In Service</p>
       </div>
     </div>
 
     <div class="stat-card">
       <div class="stat-icon" style="background: #dc3545;">🗑️</div>
       <div class="stat-info">
-        <h3><%= @stats[:retired_laptops] %></h3>
+        <h3><%= @stats[:retired_products] %></h3>
         <p>Retired</p>
       </div>
     </div>
@@ -85,7 +85,7 @@
         <table class="recent-table">
           <thead>
             <tr>
-              <th>Laptop</th>
+              <th>Product</th>
               <th>Customer</th>
               <th>Date</th>
               <th>Price</th>
@@ -94,7 +94,7 @@
           <tbody>
             <% @recent_sales.each do |sale| %>
               <tr>
-                <td><%= link_to sale.laptop.display_name, laptop_path(sale.laptop) %></td>
+                <td><%= link_to sale.product.display_name, product_path(sale.product) %></td>
                 <td><%= sale.sold_to %></td>
                 <td><%= sale.sold_at.strftime("%b %d, %Y") %></td>
                 <td class="price"><%= number_to_currency(sale.sale_price) %></td>
@@ -115,38 +115,38 @@
         </div>
         
         <div class="alert-list">
-          <% @service_due.each do |laptop| %>
+          <% @service_due.each do |product| %>
             <div class="alert-item">
               <div class="alert-info">
-                <strong><%= link_to laptop.display_name, laptop_path(laptop) %></strong>
-                <span class="alert-date">Due: <%= laptop.next_service_due.strftime("%B %d, %Y") %></span>
+                <strong><%= link_to product.display_name, product_path(product) %></strong>
+                <span class="alert-date">Due: <%= product.next_service_due.strftime("%B %d, %Y") %></span>
               </div>
-              <%= link_to "View", laptop_path(laptop), class: "btn btn-sm btn-warning" %>
+              <%= link_to "View", product_path(product), class: "btn btn-sm btn-warning" %>
             </div>
           <% end %>
         </div>
       </div>
     <% end %>
 
-    <!-- Recent Laptops -->
+    <!-- Recent Products -->
     <div class="dashboard-section">
       <div class="section-header">
-        <h2>Recently Added Laptops</h2>
-        <%= link_to "View All →", laptops_path, class: "view-all-link" %>
+        <h2>Recently Added Products</h2>
+        <%= link_to "View All →", products_path, class: "view-all-link" %>
       </div>
       
       <div class="laptop-grid">
-        <% @recent_laptops.each do |laptop| %>
+        <% @recent_products.each do |product| %>
           <div class="laptop-card-mini">
-            <% if laptop.main_image %>
-              <%= image_tag laptop.main_image.variant(resize_to_limit: [150, 100]), alt: laptop.display_name %>
+            <% if product.images.attached? %>
+              <%= image_tag product.images.first.variant(resize_to_limit: [150, 100]), alt: product.display_name %>
             <% else %>
               <div class="no-image-mini">No Image</div>
             <% end %>
             <div class="laptop-info-mini">
-              <h4><%= link_to laptop.brand, laptop_path(laptop) %></h4>
-              <p><%= laptop.model %></p>
-              <span class="badge badge-<%= laptop.status %>"><%= laptop.status.humanize %></span>
+              <h4><%= link_to product.display_name, product_path(product) %></h4>
+              <p><%= product.brand %></p>
+              <span class="badge badge-<%= product.status %>"><%= product.status.humanize %></span>
             </div>
           </div>
         <% end %>
@@ -158,9 +158,9 @@
   <div class="quick-actions">
     <h2>Quick Actions</h2>
     <div class="action-buttons">
-      <%= link_to "➕ Add Laptop", new_laptop_path, class: "btn btn-primary" %>
+      <%= link_to "➕ Add Product", new_product_path, class: "btn btn-primary" %>
       <%= link_to "💼 Record Sale", new_sale_path, class: "btn btn-success" %>
-      <%= link_to "📋 View Inventory", laptops_path, class: "btn btn-info" %>
+      <%= link_to "📋 View Inventory", products_path, class: "btn btn-info" %>
       <%= link_to "📊 Sales History", sales_path, class: "btn btn-secondary" %>
     </div>
   </div>

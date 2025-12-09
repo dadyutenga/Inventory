@@ -2,7 +2,7 @@
   <div class="header-section">
     <h1>Sale Details</h1>
     <div class="header-actions">
-      <%= link_to "View Laptop", laptop_path(@sale.laptop), class: "btn btn-info" %>
+      <%= link_to "View Product", product_path(@sale.product), class: "btn btn-info" %>
       <%= link_to "Back to Sales", sales_path, class: "btn btn-secondary" %>
     </div>
   </div>
@@ -35,38 +35,38 @@
     </div>
 
     <div class="detail-section">
-      <h2>Laptop Information</h2>
+      <h2>Product Information</h2>
       <table class="detail-table">
         <tr>
-          <th>Laptop</th>
-          <td><%= link_to @sale.laptop.display_name, laptop_path(@sale.laptop) %></td>
+          <th>Product</th>
+          <td><%= link_to @sale.product.display_name, product_path(@sale.product) %></td>
         </tr>
         <tr>
           <th>SKU</th>
-          <td><%= @sale.laptop.sku %></td>
+          <td><%= @sale.product.sku %></td>
         </tr>
         <tr>
           <th>Brand</th>
-          <td><%= @sale.laptop.brand %></td>
+          <td><%= @sale.product.brand %></td>
         </tr>
         <tr>
           <th>Model</th>
-          <td><%= @sale.laptop.model %></td>
+          <td><%= @sale.product.model %></td>
         </tr>
         <tr>
           <th>Serial Number</th>
-          <td><%= @sale.laptop.serial_number %></td>
+          <td><%= @sale.product.serial_number %></td>
         </tr>
         <tr>
           <th>Purchase Price</th>
-          <td><%= number_to_currency(@sale.laptop.purchase_price) if @sale.laptop.purchase_price %></td>
+          <td><%= number_to_currency(@sale.product.purchase_price) if @sale.product.purchase_price %></td>
         </tr>
-        <% if @sale.laptop.purchase_price && @sale.sale_price %>
+        <% if @sale.product.purchase_price && @sale.sale_price %>
           <tr>
             <th>Profit/Loss</th>
-            <td class="<%= @sale.sale_price > @sale.laptop.purchase_price ? 'profit' : 'loss' %>">
-              <%= number_to_currency(@sale.sale_price - @sale.laptop.purchase_price) %>
-              (<%= number_to_percentage(((@sale.sale_price - @sale.laptop.purchase_price) / @sale.laptop.purchase_price * 100), precision: 1) %>)
+            <td class="<%= @sale.sale_price > @sale.product.purchase_price ? 'profit' : 'loss' %>">
+              <%= number_to_currency(@sale.sale_price - @sale.product.purchase_price) %>
+              (<%= number_to_percentage(((@sale.sale_price - @sale.product.purchase_price) / @sale.product.purchase_price * 100), precision: 1) %>)
             </td>
           </tr>
         <% end %>

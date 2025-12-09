@@ -1,0 +1,25 @@
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :layout %>
+    <%= form.text_field :layout, name: "product[keyboard_attributes][layout]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :switch_type %>
+    <%= form.text_field :switch_type, name: "product[keyboard_attributes][switch_type]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :backlit %>
+    <%= form.check_box :backlit, name: "product[keyboard_attributes][backlit]" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :connectivity %>
+    <%= form.text_field :connectivity, name: "product[keyboard_attributes][connectivity]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :wireless %>
+    <%= form.check_box :wireless, name: "product[keyboard_attributes][wireless]" %>
+  </div>
+</div>

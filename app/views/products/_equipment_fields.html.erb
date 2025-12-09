@@ -1,0 +1,14 @@
+<% case product.category.to_s %>
+<% when "laptop" %>
+  <%= render "products/equipment_fields/laptop_fields", form: form %>
+<% when "mouse" %>
+  <%= render "products/equipment_fields/mouse_fields", form: form %>
+<% when "keyboard" %>
+  <%= render "products/equipment_fields/keyboard_fields", form: form %>
+<% when "server" %>
+  <%= render "products/equipment_fields/server_fields", form: form %>
+<% when "desktop_pc" %>
+  <%= render "products/equipment_fields/desktop_pc_fields", form: form %>
+<% else %>
+  <p>No specific fields for this category.</p>
+<% end %>

@@ -1,0 +1,8 @@
+<div class="container">
+  <div class="header-section">
+    <h1>Edit Product</h1>
+    <%= link_to "Back to Inventory", products_path, class: "btn btn-secondary" %>
+  </div>
+
+  <%= render "form", product: @product %>
+</div>

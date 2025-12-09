@@ -21,9 +21,9 @@
       
       <div class="form-row">
         <div class="form-group">
-          <%= form.label :laptop_id, "Laptop *" %>
-          <%= form.collection_select :laptop_id, @laptops, :id, :display_name,
-                                    { prompt: "Select a laptop..." },
+          <%= form.label :product_id, "Product *" %>
+          <%= form.collection_select :product_id, @products, :id, :display_name,
+                                    { prompt: "Select a product..." },
                                     { required: true, class: "form-control" } %>
         </div>
 

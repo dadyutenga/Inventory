@@ -1,0 +1,110 @@
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :cpu %>
+    <%= form.text_field :cpu, name: "product[laptop_attributes][cpu]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :cpu_generation %>
+    <%= form.text_field :cpu_generation, name: "product[laptop_attributes][cpu_generation]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :gpu %>
+    <%= form.text_field :gpu, name: "product[laptop_attributes][gpu]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :ram_size %>
+    <%= form.text_field :ram_size, name: "product[laptop_attributes][ram_size]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :ram_type %>
+    <%= form.text_field :ram_type, name: "product[laptop_attributes][ram_type]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :storage_capacity %>
+    <%= form.text_field :storage_capacity, name: "product[laptop_attributes][storage_capacity]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :storage_type %>
+    <%= form.text_field :storage_type, name: "product[laptop_attributes][storage_type]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :screen_size %>
+    <%= form.text_field :screen_size, name: "product[laptop_attributes][screen_size]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :screen_resolution %>
+    <%= form.text_field :screen_resolution, name: "product[laptop_attributes][screen_resolution]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :display_type %>
+    <%= form.text_field :display_type, name: "product[laptop_attributes][display_type]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :keyboard_type %>
+    <%= form.text_field :keyboard_type, name: "product[laptop_attributes][keyboard_type]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :keyboard_backlight %>
+    <%= form.check_box :keyboard_backlight, name: "product[laptop_attributes][keyboard_backlight]" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :battery_capacity %>
+    <%= form.text_field :battery_capacity, name: "product[laptop_attributes][battery_capacity]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :webcam %>
+    <%= form.check_box :webcam, name: "product[laptop_attributes][webcam]" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :microphone %>
+    <%= form.check_box :microphone, name: "product[laptop_attributes][microphone]" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :wifi_type %>
+    <%= form.text_field :wifi_type, name: "product[laptop_attributes][wifi_type]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :bluetooth_version %>
+    <%= form.text_field :bluetooth_version, name: "product[laptop_attributes][bluetooth_version]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group full-width">
+    <%= form.label :ports %>
+    <%= form.text_area :ports, name: "product[laptop_attributes][ports]", rows: 2, class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :weight %>
+    <%= form.text_field :weight, name: "product[laptop_attributes][weight]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :operating_system %>
+    <%= form.text_field :operating_system, name: "product[laptop_attributes][operating_system]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :license_key %>
+    <%= form.text_field :license_key, name: "product[laptop_attributes][license_key]", class: "form-control" %>
+  </div>
+</div>

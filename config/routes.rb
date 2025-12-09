@@ -20,8 +20,8 @@ Rails.application.routes.draw do
     end
   end
 
-  # Laptops
-  resources :laptops do
+  # Products (polymorphic equipment)
+  resources :products do
     member do
       delete :remove_image
     end

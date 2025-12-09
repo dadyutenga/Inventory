@@ -3,12 +3,12 @@ class SalesController < ApplicationController
   before_action :set_sale, only: [ :show ]
 
   def index
-    @sales = Sale.includes(:laptop, :sold_by).order(sold_at: :desc)
+    @sales = Sale.includes(:product, :sold_by).order(sold_at: :desc)
   end
 
   def new
     @sale = Sale.new
-    @laptops = Laptop.where.not(status: :sold).order(:brand, :model)
+    @products = Product.where.not(status: :sold).order(:name)
   end
 
   def create
@@ -19,7 +19,7 @@ class SalesController < ApplicationController
     if @sale.save
       redirect_to @sale, notice: "Sale was successfully recorded."
     else
-      @laptops = Laptop.where.not(status: :sold).order(:brand, :model)
+      @products = Product.where.not(status: :sold).order(:name)
       render :new, status: :unprocessable_entity
     end
   end
@@ -34,6 +34,6 @@ class SalesController < ApplicationController
   end
 
   def sale_params
-    params.require(:sale).permit(:laptop_id, :sold_to, :sold_at, :sale_price, :invoice_ref)
+    params.require(:sale).permit(:product_id, :sold_to, :sold_at, :sale_price, :invoice_ref)
   end
 end

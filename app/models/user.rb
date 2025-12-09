@@ -4,7 +4,7 @@ class User < ApplicationRecord
 
   enum :role, { employee: 0, admin: 1 }, default: :employee
 
-  has_many :laptops_allocated, class_name: "Laptop", foreign_key: "allocated_to_id", dependent: :nullify
+  has_many :products_allocated, class_name: "Product", foreign_key: "allocated_to_id", dependent: :nullify
   has_many :sales, foreign_key: "sold_by_id", dependent: :restrict_with_error
 
   validates :name, presence: true

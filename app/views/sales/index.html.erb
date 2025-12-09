@@ -9,7 +9,7 @@
       <thead>
         <tr>
           <th>Invoice Ref</th>
-          <th>Laptop</th>
+          <th>Product</th>
           <th>Sold To</th>
           <th>Sold By</th>
           <th>Sale Date</th>
@@ -21,7 +21,7 @@
         <% @sales.each do |sale| %>
           <tr>
             <td><%= sale.invoice_ref || "N/A" %></td>
-            <td><%= link_to sale.laptop.display_name, laptop_path(sale.laptop) %></td>
+            <td><%= link_to sale.product.display_name, product_path(sale.product) %></td>
             <td><%= sale.sold_to %></td>
             <td><%= sale.sold_by.name || sale.sold_by.email %></td>
             <td><%= sale.sold_at.strftime("%B %d, %Y") %></td>

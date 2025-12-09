@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_09_160809) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_09_174000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,12 +51,30 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_09_160809) do
     t.index ["token_digest"], name: "index_blacklisted_tokens_on_token_digest", unique: true
   end
 
+  create_table "desktop_pcs", force: :cascade do |t|
+    t.string "cpu"
+    t.datetime "created_at", null: false
+    t.string "form_factor"
+    t.string "gpu"
+    t.string "ram_size"
+    t.string "storage_capacity"
+    t.string "storage_type"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "keyboards", force: :cascade do |t|
+    t.boolean "backlit"
+    t.string "connectivity"
+    t.datetime "created_at", null: false
+    t.string "layout"
+    t.string "switch_type"
+    t.datetime "updated_at", null: false
+    t.boolean "wireless"
+  end
+
   create_table "laptops", force: :cascade do |t|
-    t.bigint "allocated_to_id"
     t.string "battery_capacity"
     t.string "bluetooth_version"
-    t.string "brand"
-    t.integer "condition"
     t.string "cpu"
     t.string "cpu_generation"
     t.datetime "created_at", null: false
@@ -64,46 +82,86 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_09_160809) do
     t.string "gpu"
     t.boolean "keyboard_backlight"
     t.string "keyboard_type"
-    t.date "last_service_date"
     t.string "license_key"
     t.boolean "microphone"
-    t.string "model"
-    t.string "model_number"
-    t.date "next_service_due"
-    t.text "notes"
     t.string "operating_system"
     t.text "ports"
-    t.date "purchase_date"
-    t.decimal "purchase_price"
     t.string "ram_size"
     t.string "ram_type"
     t.string "screen_resolution"
     t.string "screen_size"
-    t.string "serial_number"
-    t.string "sku"
-    t.integer "status", default: 0, null: false
     t.string "storage_capacity"
     t.string "storage_type"
     t.datetime "updated_at", null: false
-    t.string "vendor"
     t.boolean "webcam"
     t.string "weight"
     t.string "wifi_type"
-    t.index ["allocated_to_id"], name: "index_laptops_on_allocated_to_id"
-    t.index ["serial_number"], name: "index_laptops_on_serial_number", unique: true
+  end
+
+  create_table "mice", force: :cascade do |t|
+    t.integer "buttons"
+    t.string "color"
+    t.string "connectivity"
+    t.datetime "created_at", null: false
+    t.integer "dpi"
+    t.boolean "rechargeable"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.bigint "allocated_to_id"
+    t.string "brand"
+    t.integer "category", default: 0, null: false
+    t.integer "condition", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.date "last_service_date"
+    t.string "location"
+    t.string "model"
+    t.string "model_number"
+    t.string "name", null: false
+    t.date "next_service_due"
+    t.text "notes"
+    t.bigint "productable_id", null: false
+    t.string "productable_type", null: false
+    t.date "purchase_date"
+    t.decimal "purchase_price", precision: 12, scale: 2
+    t.string "serial_number", null: false
+    t.string "sku", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.string "vendor"
+    t.index ["allocated_to_id"], name: "index_products_on_allocated_to_id"
+    t.index ["category"], name: "index_products_on_category"
+    t.index ["productable_type", "productable_id"], name: "index_products_on_productable"
+    t.index ["serial_number"], name: "index_products_on_serial_number", unique: true
+    t.index ["sku"], name: "index_products_on_sku", unique: true
+    t.index ["status"], name: "index_products_on_status"
   end
 
   create_table "sales", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "invoice_ref"
-    t.bigint "laptop_id", null: false
+    t.bigint "product_id", null: false
     t.decimal "sale_price", precision: 10, scale: 2, null: false
     t.datetime "sold_at", null: false
     t.bigint "sold_by_id", null: false
     t.string "sold_to", null: false
     t.datetime "updated_at", null: false
-    t.index ["laptop_id"], name: "index_sales_on_laptop_id"
+    t.index ["product_id"], name: "index_sales_on_product_id"
     t.index ["sold_by_id"], name: "index_sales_on_sold_by_id"
+  end
+
+  create_table "servers", force: :cascade do |t|
+    t.integer "cpu_count"
+    t.string "cpu_model"
+    t.datetime "created_at", null: false
+    t.string "operating_system"
+    t.string "rack_units"
+    t.string "raid_level"
+    t.string "ram_size"
+    t.string "storage_capacity"
+    t.string "storage_type"
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -123,7 +181,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_09_160809) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "laptops", "users", column: "allocated_to_id"
-  add_foreign_key "sales", "laptops"
+  add_foreign_key "products", "users", column: "allocated_to_id"
+  add_foreign_key "sales", "products"
   add_foreign_key "sales", "users", column: "sold_by_id"
 end

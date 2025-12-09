@@ -1,0 +1,143 @@
+<%= form_with(model: product, local: true, class: "product-form") do |form| %>
+  <% if product.errors.any? %>
+    <div class="error-messages">
+      <h2><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h2>
+      <ul>
+        <% product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-section">
+    <h2>General Information</h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :name, "Name *" %>
+        <%= form.text_field :name, required: true, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :category, "Category *" %>
+        <%= form.select :category, Product.categories.keys.map { |c| [c.humanize, c] }, {}, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :sku, "SKU *" %>
+        <%= form.text_field :sku, required: true, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :serial_number, "Serial Number *" %>
+        <%= form.text_field :serial_number, required: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :brand %>
+        <%= form.text_field :brand, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :model %>
+        <%= form.text_field :model, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :model_number %>
+        <%= form.text_field :model_number, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :vendor %>
+        <%= form.text_field :vendor, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :location %>
+        <%= form.text_field :location, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :allocated_to_id, "Allocated To" %>
+        <%= form.collection_select :allocated_to_id, User.all, :id, :name, include_blank: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :status %>
+        <%= form.select :status, Product.statuses.keys.map { |s| [s.humanize, s] }, {}, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :condition %>
+        <%= form.select :condition, Product.conditions.keys.map { |c| [c.humanize, c] }, {}, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :purchase_date %>
+        <%= form.date_field :purchase_date, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :purchase_price %>
+        <%= form.number_field :purchase_price, step: 0.01, min: 0, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= form.label :last_service_date %>
+        <%= form.date_field :last_service_date, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= form.label :next_service_due %>
+        <%= form.date_field :next_service_due, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group full-width">
+        <%= form.label :notes %>
+        <%= form.text_area :notes, rows: 3, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group full-width">
+        <%= form.label :images, "Images" %>
+        <%= form.file_field :images, multiple: true, class: "form-control" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Equipment Details</h2>
+    <%= render partial: "products/equipment_fields", locals: { form: form, product: product } %>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", products_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
+
+<style>
+.product-form { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 25px; }
+.form-section h2 { margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #007bff; font-size: 20px; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
+.form-group { display: flex; flex-direction: column; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label { margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+.form-control { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+.form-control:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+.error-messages { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+.error-messages h2 { font-size: 16px; margin: 0 0 10px 0; }
+.error-messages ul { margin: 0; padding-left: 20px; }
+.form-actions { display: flex; gap: 10px; margin-top: 20px; }
+.btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; font-weight: 600; text-align: center; }
+.btn-primary { background: #007bff; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+</style>

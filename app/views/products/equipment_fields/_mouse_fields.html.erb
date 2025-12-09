@@ -1,0 +1,25 @@
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :connectivity %>
+    <%= form.text_field :connectivity, name: "product[mouse_attributes][connectivity]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :dpi %>
+    <%= form.number_field :dpi, name: "product[mouse_attributes][dpi]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :buttons %>
+    <%= form.number_field :buttons, name: "product[mouse_attributes][buttons]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :color %>
+    <%= form.text_field :color, name: "product[mouse_attributes][color]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :rechargeable %>
+    <%= form.check_box :rechargeable, name: "product[mouse_attributes][rechargeable]" %>
+  </div>
+</div>

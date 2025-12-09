@@ -1,0 +1,40 @@
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :cpu_model %>
+    <%= form.text_field :cpu_model, name: "product[server_attributes][cpu_model]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :cpu_count %>
+    <%= form.number_field :cpu_count, name: "product[server_attributes][cpu_count]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :ram_size %>
+    <%= form.text_field :ram_size, name: "product[server_attributes][ram_size]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :storage_capacity %>
+    <%= form.text_field :storage_capacity, name: "product[server_attributes][storage_capacity]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :storage_type %>
+    <%= form.text_field :storage_type, name: "product[server_attributes][storage_type]", class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <%= form.label :raid_level %>
+    <%= form.text_field :raid_level, name: "product[server_attributes][raid_level]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :operating_system %>
+    <%= form.text_field :operating_system, name: "product[server_attributes][operating_system]", class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= form.label :rack_units %>
+    <%= form.text_field :rack_units, name: "product[server_attributes][rack_units]", class: "form-control" %>
+  </div>
+</div>

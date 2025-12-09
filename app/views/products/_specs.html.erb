@@ -1,0 +1,58 @@
+<% case product.category.to_s %>
+<% when "laptop" %>
+  <table class="detail-table">
+    <tr><th>CPU</th><td><%= product.productable.cpu %></td></tr>
+    <tr><th>CPU Generation</th><td><%= product.productable.cpu_generation %></td></tr>
+    <tr><th>GPU</th><td><%= product.productable.gpu %></td></tr>
+    <tr><th>RAM</th><td><%= product.productable.ram_size %> <%= product.productable.ram_type %></td></tr>
+    <tr><th>Storage</th><td><%= product.productable.storage_capacity %> <%= product.productable.storage_type %></td></tr>
+    <tr><th>Screen</th><td><%= product.productable.screen_size %> / <%= product.productable.screen_resolution %></td></tr>
+    <tr><th>Display</th><td><%= product.productable.display_type %></td></tr>
+    <tr><th>Keyboard</th><td><%= product.productable.keyboard_type %> (<%= product.productable.keyboard_backlight ? "Backlit" : "" %>)</td></tr>
+    <tr><th>Battery</th><td><%= product.productable.battery_capacity %></td></tr>
+    <tr><th>Webcam</th><td><%= product.productable.webcam ? "Yes" : "No" %></td></tr>
+    <tr><th>Microphone</th><td><%= product.productable.microphone ? "Yes" : "No" %></td></tr>
+    <tr><th>WiFi</th><td><%= product.productable.wifi_type %></td></tr>
+    <tr><th>Bluetooth</th><td><%= product.productable.bluetooth_version %></td></tr>
+    <tr><th>Ports</th><td><%= product.productable.ports %></td></tr>
+    <tr><th>Weight</th><td><%= product.productable.weight %></td></tr>
+    <tr><th>Operating System</th><td><%= product.productable.operating_system %></td></tr>
+    <tr><th>License Key</th><td><%= product.productable.license_key %></td></tr>
+  </table>
+<% when "mouse" %>
+  <table class="detail-table">
+    <tr><th>Connectivity</th><td><%= product.productable.connectivity %></td></tr>
+    <tr><th>DPI</th><td><%= product.productable.dpi %></td></tr>
+    <tr><th>Buttons</th><td><%= product.productable.buttons %></td></tr>
+    <tr><th>Color</th><td><%= product.productable.color %></td></tr>
+    <tr><th>Rechargeable</th><td><%= product.productable.rechargeable ? "Yes" : "No" %></td></tr>
+  </table>
+<% when "keyboard" %>
+  <table class="detail-table">
+    <tr><th>Layout</th><td><%= product.productable.layout %></td></tr>
+    <tr><th>Switch Type</th><td><%= product.productable.switch_type %></td></tr>
+    <tr><th>Backlit</th><td><%= product.productable.backlit ? "Yes" : "No" %></td></tr>
+    <tr><th>Connectivity</th><td><%= product.productable.connectivity %></td></tr>
+    <tr><th>Wireless</th><td><%= product.productable.wireless ? "Yes" : "No" %></td></tr>
+  </table>
+<% when "server" %>
+  <table class="detail-table">
+    <tr><th>CPU Model</th><td><%= product.productable.cpu_model %></td></tr>
+    <tr><th>CPU Count</th><td><%= product.productable.cpu_count %></td></tr>
+    <tr><th>RAM</th><td><%= product.productable.ram_size %></td></tr>
+    <tr><th>Storage</th><td><%= product.productable.storage_capacity %> <%= product.productable.storage_type %></td></tr>
+    <tr><th>RAID</th><td><%= product.productable.raid_level %></td></tr>
+    <tr><th>OS</th><td><%= product.productable.operating_system %></td></tr>
+    <tr><th>Rack Units</th><td><%= product.productable.rack_units %></td></tr>
+  </table>
+<% when "desktop_pc" %>
+  <table class="detail-table">
+    <tr><th>CPU</th><td><%= product.productable.cpu %></td></tr>
+    <tr><th>RAM</th><td><%= product.productable.ram_size %></td></tr>
+    <tr><th>Storage</th><td><%= product.productable.storage_capacity %> <%= product.productable.storage_type %></td></tr>
+    <tr><th>GPU</th><td><%= product.productable.gpu %></td></tr>
+    <tr><th>Form Factor</th><td><%= product.productable.form_factor %></td></tr>
+  </table>
+<% else %>
+  <p>No specific details for this category.</p>
+<% end %>
