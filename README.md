@@ -347,4 +347,7 @@ For issues or questions, contact the development team.
 
 ---
 
+Admin: admin@ditronics.com / password123
+Employee: employee@ditronics.com / password123
+
 **Built with ❤️ using Rails 8.1.1**
