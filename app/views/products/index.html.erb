@@ -49,7 +49,7 @@
             </div>
 
             <% if product.purchase_price %>
-              <p class="price">Purchase Price: $<%= number_with_precision(product.purchase_price, precision: 2) %></p>
+              <p class="price">Purchase Price: <%= format_currency(product.purchase_price) %></p>
             <% end %>
 
             <div class="actions">

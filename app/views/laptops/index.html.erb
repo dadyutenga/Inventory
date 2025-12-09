@@ -56,7 +56,7 @@
             </div>
             
             <% if laptop.purchase_price %>
-              <p class="price">Purchase Price: $<%= number_with_precision(laptop.purchase_price, precision: 2) %></p>
+              <p class="price">Purchase Price: <%= format_currency(laptop.purchase_price) %></p>
             <% end %>
             
             <div class="actions">

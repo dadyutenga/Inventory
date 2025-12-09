@@ -39,7 +39,7 @@
           <tr><th>Vendor</th><td><%= @product.vendor %></td></tr>
           <tr><th>Location</th><td><%= @product.location %></td></tr>
           <tr><th>Purchase Date</th><td><%= @product.purchase_date %></td></tr>
-          <tr><th>Purchase Price</th><td><%= number_to_currency(@product.purchase_price) if @product.purchase_price %></td></tr>
+          <tr><th>Purchase Price</th><td><%= format_currency(@product.purchase_price) if @product.purchase_price %></td></tr>
           <tr><th>Last Service Date</th><td><%= @product.last_service_date %></td></tr>
           <tr><th>Next Service Due</th><td><%= @product.next_service_due %></td></tr>
           <tr><th>Allocated To</th><td><%= @product.allocated_to&.name %></td></tr>

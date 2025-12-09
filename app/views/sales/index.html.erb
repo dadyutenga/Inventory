@@ -25,7 +25,7 @@
             <td><%= sale.sold_to %></td>
             <td><%= sale.sold_by.name || sale.sold_by.email %></td>
             <td><%= sale.sold_at.strftime("%B %d, %Y") %></td>
-            <td class="price">$<%= number_with_precision(sale.sale_price, precision: 2) %></td>
+            <td class="price"><%= format_currency(sale.sale_price) %></td>
             <td>
               <%= link_to "View", sale_path(sale), class: "btn btn-sm btn-info" %>
             </td>

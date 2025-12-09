@@ -25,7 +25,7 @@
         </tr>
         <tr>
           <th>Sale Price</th>
-          <td class="price"><%= number_to_currency(@sale.sale_price) %></td>
+          <td class="price"><%= format_currency(@sale.sale_price) %></td>
         </tr>
         <tr>
           <th>Sold By</th>
@@ -59,13 +59,13 @@
         </tr>
         <tr>
           <th>Purchase Price</th>
-          <td><%= number_to_currency(@sale.product.purchase_price) if @sale.product.purchase_price %></td>
+          <td><%= format_currency(@sale.product.purchase_price) if @sale.product.purchase_price %></td>
         </tr>
         <% if @sale.product.purchase_price && @sale.sale_price %>
           <tr>
             <th>Profit/Loss</th>
             <td class="<%= @sale.sale_price > @sale.product.purchase_price ? 'profit' : 'loss' %>">
-              <%= number_to_currency(@sale.sale_price - @sale.product.purchase_price) %>
+              <%= format_currency(@sale.sale_price - @sale.product.purchase_price) %>
               (<%= number_to_percentage(((@sale.sale_price - @sale.product.purchase_price) / @sale.product.purchase_price * 100), precision: 1) %>)
             </td>
           </tr>

@@ -59,7 +59,7 @@
     <div class="stat-card">
       <div class="stat-icon" style="background: #28a745;">💵</div>
       <div class="stat-info">
-        <h3><%= number_to_currency(@stats[:total_revenue]) %></h3>
+        <h3><%= format_currency(@stats[:total_revenue]) %></h3>
         <p>Total Revenue</p>
       </div>
     </div>
@@ -67,7 +67,7 @@
     <div class="stat-card">
       <div class="stat-icon" style="background: #6610f2;">📈</div>
       <div class="stat-info">
-        <h3><%= number_to_currency(@stats[:avg_sale_price] || 0) %></h3>
+        <h3><%= format_currency(@stats[:avg_sale_price] || 0) %></h3>
         <p>Avg Sale Price</p>
       </div>
     </div>
@@ -97,7 +97,7 @@
                 <td><%= link_to sale.product.display_name, product_path(sale.product) %></td>
                 <td><%= sale.sold_to %></td>
                 <td><%= sale.sold_at.strftime("%b %d, %Y") %></td>
-                <td class="price"><%= number_to_currency(sale.sale_price) %></td>
+                <td class="price"><%= format_currency(sale.sale_price) %></td>
               </tr>
             <% end %>
           </tbody>

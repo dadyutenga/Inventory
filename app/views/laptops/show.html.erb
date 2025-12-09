@@ -44,7 +44,7 @@
         <tr><th>Model Number</th><td><%= @laptop.model_number %></td></tr>
         <tr><th>Serial Number</th><td><%= @laptop.serial_number %></td></tr>
         <tr><th>Purchase Date</th><td><%= @laptop.purchase_date&.strftime("%B %d, %Y") %></td></tr>
-        <tr><th>Purchase Price</th><td><%= number_to_currency(@laptop.purchase_price) if @laptop.purchase_price %></td></tr>
+        <tr><th>Purchase Price</th><td><%= format_currency(@laptop.purchase_price) if @laptop.purchase_price %></td></tr>
         <tr><th>Condition</th><td><%= @laptop.condition.humanize %></td></tr>
       </table>
     </div>
@@ -105,7 +105,7 @@
         <tr><th>Sold To</th><td><%= @laptop.sale.sold_to %></td></tr>
         <tr><th>Sold By</th><td><%= @laptop.sale.sold_by.name || @laptop.sale.sold_by.email %></td></tr>
         <tr><th>Sale Date</th><td><%= @laptop.sale.sold_at.strftime("%B %d, %Y %I:%M %p") %></td></tr>
-        <tr><th>Sale Price</th><td><%= number_to_currency(@laptop.sale.sale_price) %></td></tr>
+        <tr><th>Sale Price</th><td><%= format_currency(@laptop.sale.sale_price) %></td></tr>
         <tr><th>Invoice Reference</th><td><%= @laptop.sale.invoice_ref %></td></tr>
       </table>
     </div>
