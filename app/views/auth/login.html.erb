@@ -1,35 +1,369 @@
-<div class="container mx-auto max-w-md mt-20">
-  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <h2 class="text-2xl font-bold mb-6 text-center">Login to Ditronics Inventory</h2>
+<%# Hide global flash messages for this page only %>
+<style>
+  .flash-notice, .flash-alert { display: none !important; }
+  
+  /* Custom CSS for Login Page */
+  .login-container {
+    display: flex;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* Left Panel */
+  .left-panel {
+    display: none;
+    width: 50%;
+    background-color: #0f172a; /* Slate 900 */
+    color: white;
+    position: relative;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 4rem;
+  }
+
+  @media (min-width: 1024px) {
+    .left-panel {
+      display: flex;
+    }
+  }
+
+  .bg-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom right, rgba(6, 78, 59, 0.4), rgba(15, 23, 42, 0.9));
+  }
+
+  .content-wrapper {
+    position: relative;
+    z-index: 10;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .logo-box {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(16, 185, 129, 0.2); /* Emerald 500/20 */
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #34d399; /* Emerald 400 */
+  }
+
+  .brand-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-text {
+    color: #94a3b8; /* Slate 400 */
+    font-size: 1.125rem;
+    max-width: 28rem;
+    line-height: 1.625;
+  }
+
+  /* Right Panel */
+  .right-panel {
+    width: 100%;
+    background-color: #fdfbf7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .right-panel {
+      width: 50%;
+    }
+  }
+
+  .form-wrapper {
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .form-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .form-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-subtitle {
+    color: #64748b; /* Slate 500 */
+  }
+
+  .alert-box {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .alert-error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+  }
+
+  .alert-success {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155; /* Slate 700 */
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    color: #0f172a;
+    font-size: 1rem;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  .form-input:focus {
+    border-color: #10b981; /* Emerald 500 */
+    box-shadow: 0 0 0 1px #10b981;
+  }
+
+  .password-wrapper {
+    position: relative;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .password-toggle:hover {
+    color: #475569;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .forgot-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #059669; /* Emerald 600 */
+    text-decoration: none;
+  }
+
+  .forgot-link:hover {
+    color: #10b981;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background-color: #2d8a75;
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 1rem;
+  }
+
+  .submit-btn:hover {
+    background-color: #247060;
+  }
+
+  .footer {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .hidden { display: none; }
+</style>
+
+<div class="login-container">
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <!-- Background Pattern -->
+    <div class="bg-pattern">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="circuit" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+            <path d="M10 10h80v80h-80z" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M50 10v80M10 50h80" fill="none" stroke="currentColor" stroke-width="0.5"/>
+            <circle cx="50" cy="50" r="5" fill="currentColor"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#circuit)"/>
+      </svg>
+    </div>
     
-    <% if flash[:alert] %>
-      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <%= flash[:alert] %>
-      </div>
-    <% end %>
+    <!-- Gradient Overlay -->
+    <div class="bg-gradient"></div>
 
-    <%= form_with url: login_path, method: :post, local: true, class: "space-y-4" do |f| %>
-      <div>
-        <%= f.label :email, class: "block text-gray-700 text-sm font-bold mb-2" %>
-        <%= f.email_field :email, required: true, autofocus: true, 
-            class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
-      </div>
-
-      <div>
-        <%= f.label :password, class: "block text-gray-700 text-sm font-bold mb-2" %>
-        <%= f.password_field :password, required: true,
-            class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    <div class="content-wrapper">
+      <!-- Logo -->
+      <div class="brand">
+        <div class="logo-box">
+          <svg class="logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <span class="brand-name">Ditronics</span>
       </div>
 
-      <div class="flex items-center justify-between">
-        <%= f.submit "Login", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" %>
-      </div>
-    <% end %>
-
-    <div class="text-center mt-4">
-      <p class="text-sm text-gray-600">
-        Contact your administrator if you need an account.
+      <h1 class="hero-title">
+        Inventory<br/>
+        Solution.
+      </h1>
+      
+      <p class="hero-text">
+        Streamline your operations with our cutting-edge management system.
       </p>
     </div>
   </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <div class="form-wrapper">
+      <div class="form-header">
+        <h2 class="form-title">Sign in to your account</h2>
+        <p class="form-subtitle">Welcome back to the Ditronics Inventory Management System.</p>
+      </div>
+
+      <% if flash[:alert] %>
+        <div class="alert-box alert-error">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <% if flash[:notice] %>
+        <div class="alert-box alert-success">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <%= flash[:notice] %>
+        </div>
+      <% end %>
+
+      <%= form_with url: login_path, method: :post, local: true do |f| %>
+        <div class="form-group">
+          <%= f.label :email, "Username or Email", class: "form-label" %>
+          <%= f.text_field :email, required: true, autofocus: true, placeholder: "Enter your username or email",
+              class: "form-input" %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :password, class: "form-label" %>
+          <div class="password-wrapper">
+            <%= f.password_field :password, required: true, placeholder: "Enter your password", id: "password-field",
+                class: "form-input", style: "padding-right: 2.5rem;" %>
+            
+            <button type="button" onclick="togglePassword()" class="password-toggle">
+              <svg id="eye-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <svg id="eye-off-icon" width="20" height="20" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a href="#" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        <%= f.submit "Login", class: "submit-btn" %>
+      <% end %>
+
+      <div class="footer">
+        <p>© 2025 Ditronics Technology. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  function togglePassword() {
+    const passwordField = document.getElementById('password-field');
+    const eyeIcon = document.getElementById('eye-icon');
+    const eyeOffIcon = document.getElementById('eye-off-icon');
+    
+    if (passwordField.type === 'password') {
+      passwordField.type = 'text';
+      eyeIcon.classList.add('hidden');
+      eyeOffIcon.classList.remove('hidden');
+    } else {
+      passwordField.type = 'password';
+      eyeIcon.classList.remove('hidden');
+      eyeOffIcon.classList.add('hidden');
+    }
+  }
+</script>

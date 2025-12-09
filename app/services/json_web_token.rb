@@ -14,7 +14,12 @@ class JsonWebToken
   # Decode JWT token
   def self.decode(token)
     decoded = JWT.decode(token, SECRET_KEY, true, { algorithm: "HS256" })
-    HashWithIndifferentAccess.new(decoded[0])
+    payload = HashWithIndifferentAccess.new(decoded[0])
+
+    # Check if token is blacklisted
+    raise ExceptionHandler::InvalidToken if BlacklistedToken.blacklisted?(token)
+
+    payload
   rescue JWT::ExpiredSignature
     raise ExceptionHandler::ExpiredSignature
   rescue JWT::DecodeError

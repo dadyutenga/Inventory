@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user
 
   attr_reader :current_user
+  helper_method :current_user
 
   # Helper method to check if current user is admin
   def admin?
@@ -36,14 +37,14 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # Authenticate user using JWT token from header or session
+  # Authenticate user using JWT token from header or cookie
   def authenticate_user
     # Try to get token from Authorization header first (for API requests)
     header = request.headers["Authorization"]
     token = header.split(" ").last if header
 
-    # Fall back to session token (for browser/ERB view requests)
-    token ||= session[:auth_token]
+    # Fall back to encrypted cookie (for browser/ERB view requests)
+    token ||= cookies.encrypted[:auth_token]
 
     raise ExceptionHandler::MissingToken unless token
 
