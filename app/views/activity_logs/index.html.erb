@@ -28,8 +28,6 @@
             <th>User</th>
             <th>Action</th>
             <th>Entity</th>
-            <th>Old Values</th>
-            <th>New Values</th>
             <th>IP</th>
             <th>User Agent</th>
           </tr>
@@ -41,8 +39,6 @@
               <td><%= log.user&.name || log.user&.email %></td>
               <td><%= log.action_type %></td>
               <td><%= "#{log.entity_type}##{log.entity_id}" %></td>
-              <td><pre><%= JSON.pretty_generate(log.old_values || {}) %></pre></td>
-              <td><pre><%= JSON.pretty_generate(log.new_values || {}) %></pre></td>
               <td><%= log.ip_address %></td>
               <td class="user-agent"><%= truncate(log.user_agent, length: 60) %></td>
             </tr>
