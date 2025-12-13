@@ -1,0 +1,44 @@
+<aside class="sidebar">
+  <div class="sidebar__brand">
+    <%= link_to root_path, class: "sidebar__brand-link" do %>
+      <div class="sidebar__brand-title">Ditronics Technology</div>
+      <div class="sidebar__brand-subtitle">Inventory Management</div>
+    <% end %>
+  </div>
+
+  <nav class="sidebar__nav">
+    <%= link_to root_path, class: "sidebar__nav-link #{current_page?(root_path) ? "is-active" : ""}" do %>
+      <span class="sidebar__icon"><i class="fas fa-tachometer-alt" aria-hidden="true"></i></span>
+      <span>Dashboard</span>
+    <% end %>
+
+    <%= link_to products_path, class: "sidebar__nav-link #{current_page?(products_path) ? "is-active" : ""}" do %>
+      <span class="sidebar__icon"><i class="fas fa-boxes" aria-hidden="true"></i></span>
+      <span>Inventory</span>
+    <% end %>
+
+    <%= link_to sales_path, class: "sidebar__nav-link #{current_page?(sales_path) ? "is-active" : ""}" do %>
+      <span class="sidebar__icon"><i class="fas fa-shopping-cart" aria-hidden="true"></i></span>
+      <span>Sales</span>
+    <% end %>
+
+    <% if current_user.admin? %>
+      <%= link_to activity_logs_path, class: "sidebar__nav-link #{current_page?(activity_logs_path) ? "is-active" : ""}" do %>
+        <span class="sidebar__icon"><i class="fas fa-history" aria-hidden="true"></i></span>
+        <span>Activity Logs</span>
+      <% end %>
+
+      <%= link_to users_path, class: "sidebar__nav-link #{current_page?(users_path) ? "is-active" : ""}" do %>
+        <span class="sidebar__icon"><i class="fas fa-users" aria-hidden="true"></i></span>
+        <span>Users</span>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <div class="sidebar__actions">
+    <%= link_to logout_path, data: { turbo_method: :delete }, class: "sidebar__nav-link" do %>
+      <span class="sidebar__icon"><i class="fas fa-sign-out-alt" aria-hidden="true"></i></span>
+      <span>Sign Out</span>
+    <% end %>
+  </div>
+</aside>

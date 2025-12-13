@@ -1,222 +1,116 @@
+<% content_for :page_heading do %>
+  Dashboard Overview
+<% end %>
+
+<% content_for :page_subheading do %>
+  Welcome back! Here's a snapshot of your inventory.
+<% end %>
+
+<% content_for :topbar_actions do %>
+  <%= form_with url: products_path, method: :get, class: "top-search", local: true do |f| %>
+    <span class="top-search__icon">⌕</span>
+    <%= f.search_field :search, value: params[:search], placeholder: "Search for items...", class: "top-search__input" %>
+  <% end %>
+
+  <%= link_to "＋ Add New", new_product_path, class: "btn btn-primary" %>
+  <% if current_user.admin? %>
+    <%= link_to "Clear Cache", clear_cache_dashboard_index_path, method: :post, class: "btn btn-muted" %>
+  <% end %>
+<% end %>
+
 <div class="dashboard">
-  <div class="header">
-    <h1>Ditronics Inventory Dashboard</h1>
-    <% if current_user.admin? %>
-      <%= link_to "Clear Cache", clear_cache_dashboard_index_path, method: :post, class: "btn btn-outline" %>
-    <% end %>
-  </div>
-
-  <!-- Statistics Cards -->
-  <div class="stats-grid">
+  <section class="stats">
     <div class="stat-card">
-      <div class="stat-icon" style="background: #007bff;">📊</div>
-      <div class="stat-info">
-        <h3><%= @stats[:total_products] %></h3>
-        <p>Total Products</p>
-      </div>
+      <div class="stat-card__label">Total Stock</div>
+      <div class="stat-card__value"><%= @stats[:total_products] %></div>
     </div>
-
     <div class="stat-card">
-      <div class="stat-icon" style="background: #28a745;">✅</div>
-      <div class="stat-info">
-        <h3><%= @stats[:available_products] %></h3>
-        <p>Available</p>
-      </div>
+      <div class="stat-card__label">Available Items</div>
+      <div class="stat-card__value"><%= @stats[:available_products] %></div>
     </div>
-
     <div class="stat-card">
-      <div class="stat-icon" style="background: #6c757d;">💼</div>
-      <div class="stat-info">
-        <h3><%= @stats[:sold_products] %></h3>
-        <p>Sold Products</p>
-      </div>
+      <div class="stat-card__label">Total Sales</div>
+      <div class="stat-card__value"><%= @stats[:total_sales] %></div>
     </div>
-
     <div class="stat-card">
-      <div class="stat-icon" style="background: #ffc107;">🔧</div>
-      <div class="stat-info">
-        <h3><%= @stats[:in_service_products] %></h3>
-        <p>In Service</p>
+      <div class="stat-card__label">Total Revenue</div>
+      <div class="stat-card__value"><%= format_currency(@stats[:total_revenue]) %></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Alerts</h2>
+        <p class="panel__subtitle">Items that need attention soon.</p>
       </div>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon" style="background: #dc3545;">🗑️</div>
-      <div class="stat-info">
-        <h3><%= @stats[:retired_products] %></h3>
-        <p>Retired</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon" style="background: #17a2b8;">💰</div>
-      <div class="stat-info">
-        <h3><%= @stats[:total_sales] %></h3>
-        <p>Total Sales</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon" style="background: #28a745;">💵</div>
-      <div class="stat-info">
-        <h3><%= format_currency(@stats[:total_revenue]) %></h3>
-        <p>Total Revenue</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon" style="background: #6610f2;">📈</div>
-      <div class="stat-info">
-        <h3><%= format_currency(@stats[:avg_sale_price] || 0) %></h3>
-        <p>Avg Sale Price</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="dashboard-content">
-    <!-- Recent Sales Section -->
-    <div class="dashboard-section">
-      <div class="section-header">
-        <h2>Recent Sales</h2>
-        <%= link_to "View All →", sales_path, class: "view-all-link" %>
-      </div>
-      
-      <% if @recent_sales.any? %>
-        <table class="recent-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Customer</th>
-              <th>Date</th>
-              <th>Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @recent_sales.each do |sale| %>
-              <tr>
-                <td><%= link_to sale.product.display_name, product_path(sale.product) %></td>
-                <td><%= sale.sold_to %></td>
-                <td><%= sale.sold_at.strftime("%b %d, %Y") %></td>
-                <td class="price"><%= format_currency(sale.sale_price) %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      <% else %>
-        <p class="no-data">No sales yet.</p>
-      <% end %>
-    </div>
-
-    <!-- Service Due Alerts -->
     <% if @service_due.any? %>
-      <div class="dashboard-section alert-section">
-        <div class="section-header">
-          <h2>⚠️ Service Due Soon</h2>
-        </div>
-        
-        <div class="alert-list">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th class="text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
           <% @service_due.each do |product| %>
-            <div class="alert-item">
-              <div class="alert-info">
-                <strong><%= link_to product.display_name, product_path(product) %></strong>
-                <span class="alert-date">Due: <%= product.next_service_due.strftime("%B %d, %Y") %></span>
-              </div>
-              <%= link_to "View", product_path(product), class: "btn btn-sm btn-warning" %>
-            </div>
+            <tr>
+              <td class="cell-strong"><%= link_to product.display_name, product_path(product), class: "link" %></td>
+              <td><%= product.next_service_due.strftime("%b %d, %Y") %></td>
+              <td>
+                <span class="pill pill--warn">Due Soon</span>
+              </td>
+              <td class="text-right"><%= link_to "View", product_path(product), class: "action" %></td>
+            </tr>
           <% end %>
-        </div>
-      </div>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="empty">No alerts right now.</p>
     <% end %>
-
-    <!-- Recent Products -->
-    <div class="dashboard-section">
-      <div class="section-header">
-        <h2>Recently Added Products</h2>
-        <%= link_to "View All →", products_path, class: "view-all-link" %>
-      </div>
-      
-      <div class="laptop-grid">
-        <% @recent_products.each do |product| %>
-          <div class="laptop-card-mini">
-            <% if product.images.attached? %>
-              <%= image_tag product.images.first.variant(resize_to_limit: [150, 100]), alt: product.display_name %>
-            <% else %>
-              <div class="no-image-mini">No Image</div>
-            <% end %>
-            <div class="laptop-info-mini">
-              <h4><%= link_to product.display_name, product_path(product) %></h4>
-              <p><%= product.brand %></p>
-              <span class="badge badge-<%= product.status %>"><%= product.status.humanize %></span>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="quick-actions">
-    <h2>Quick Actions</h2>
-    <div class="action-buttons">
-      <%= link_to "➕ Add Product", new_product_path, class: "btn btn-primary" %>
-      <%= link_to "💼 Record Sale", new_sale_path, class: "btn btn-success" %>
-      <%= link_to "📋 View Inventory", products_path, class: "btn btn-info" %>
-      <%= link_to "📊 Sales History", sales_path, class: "btn btn-secondary" %>
-    </div>
-  </div>
+  </section>
 </div>
 
 <style>
-.dashboard { max-width: 1400px; margin: 0 auto; padding: 20px; }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
-.stat-card { background: white; border-radius: 8px; padding: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.stat-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
-.stat-info h3 { margin: 0; font-size: 32px; font-weight: bold; }
-.stat-info p { margin: 5px 0 0 0; color: #6c757d; font-size: 14px; }
-.dashboard-content { display: grid; gap: 30px; margin-bottom: 30px; }
-.dashboard-section { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.alert-section { background: #fff3cd; border: 2px solid #ffc107; }
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.section-header h2 { margin: 0; font-size: 20px; }
-.view-all-link { color: #007bff; text-decoration: none; font-size: 14px; }
-.view-all-link:hover { text-decoration: underline; }
-.recent-table { width: 100%; border-collapse: collapse; }
-.recent-table thead { background: #f8f9fa; }
-.recent-table th, .recent-table td { padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6; }
-.recent-table a { color: #007bff; text-decoration: none; }
-.recent-table a:hover { text-decoration: underline; }
-.price { font-weight: bold; color: #28a745; }
-.no-data { text-align: center; padding: 20px; color: #6c757d; }
-.alert-list { display: flex; flex-direction: column; gap: 10px; }
-.alert-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 4px; border-left: 4px solid #ffc107; }
-.alert-info { display: flex; flex-direction: column; gap: 5px; }
-.alert-info strong a { color: #333; text-decoration: none; }
-.alert-info strong a:hover { color: #007bff; }
-.alert-date { font-size: 13px; color: #856404; }
-.laptop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-.laptop-card-mini { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; }
-.laptop-card-mini img { width: 100%; height: 100px; object-fit: cover; }
-.no-image-mini { height: 100px; display: flex; align-items: center; justify-content: center; background: #e9ecef; color: #6c757d; font-size: 12px; }
-.laptop-info-mini { padding: 10px; }
-.laptop-info-mini h4 { margin: 0 0 5px 0; font-size: 14px; }
-.laptop-info-mini h4 a { color: #333; text-decoration: none; }
-.laptop-info-mini h4 a:hover { color: #007bff; }
-.laptop-info-mini p { margin: 0 0 8px 0; font-size: 12px; color: #6c757d; }
-.quick-actions { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.quick-actions h2 { margin: 0 0 20px 0; font-size: 20px; }
-.action-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-.badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-.badge-active { background: #28a745; color: white; }
-.badge-sold { background: #6c757d; color: white; }
-.badge-in_repair { background: #ffc107; color: black; }
-.badge-retired { background: #dc3545; color: white; }
-.btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; font-weight: 600; text-align: center; }
-.btn-primary { background: #007bff; color: white; }
-.btn-secondary { background: #6c757d; color: white; }
-.btn-success { background: #28a745; color: white; }
-.btn-info { background: #17a2b8; color: white; }
-.btn-warning { background: #ffc107; color: black; }
-.btn-outline { background: white; color: #6c757d; border: 1px solid #6c757d; }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
+.dashboard { display: flex; flex-direction: column; gap: 16px; }
+
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.stat-card { background: #fff; border: 1px solid #e6edf5; border-radius: 12px; padding: 16px; }
+.stat-card__label { font-size: 12px; color: #6b7a90; margin-bottom: 8px; font-weight: 600; }
+.stat-card__value { font-size: 22px; font-weight: 800; color: #0f172a; }
+
+.panel { background: #fff; border: 1px solid #e6edf5; border-radius: 12px; padding: 16px; }
+.panel__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.panel__title { font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; }
+.panel__subtitle { font-size: 13px; color: #6b7a90; margin-top: 6px; }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; padding: 12px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8aa0b8; border-bottom: 1px solid #edf2f7; }
+.table td { padding: 14px 10px; border-bottom: 1px solid #edf2f7; font-size: 13px; color: #0f172a; }
+.cell-strong { font-weight: 700; }
+.text-right { text-align: right; }
+.link { color: #2563eb; text-decoration: none; }
+.link:hover { text-decoration: underline; }
+.action { color: #2563eb; font-weight: 700; text-decoration: none; }
+.action:hover { text-decoration: underline; }
+
+.pill { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+.pill--warn { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+
+.empty { padding: 10px 0; color: #6b7a90; }
+
+@media (max-width: 720px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+
+<style>
+.top-search { position: relative; width: min(420px, 46vw); }
+.top-search__icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #8aa0b8; font-size: 14px; pointer-events: none; }
+.top-search__input { width: 100%; padding: 10px 12px 10px 32px; border-radius: 10px; border: 1px solid #e6edf5; background: #fff; font-size: 13px; outline: none; }
+.top-search__input:focus { border-color: #c9daf5; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10); }
 </style>
