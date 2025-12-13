@@ -8,109 +8,200 @@
 
 <% content_for :topbar_actions do %>
   <%= form_with url: products_path, method: :get, class: "top-search", local: true do |f| %>
-    <span class="top-search__icon">⌕</span>
+    <span class="top-search__icon"><i class="fas fa-search"></i></span>
     <%= f.search_field :search, value: params[:search], placeholder: "Search for items...", class: "top-search__input" %>
   <% end %>
 
-  <%= link_to "＋ Add New", new_product_path, class: "btn btn-primary" %>
+  <%= link_to new_product_path, class: "btn btn-primary" do %>
+    <i class="fas fa-plus"></i>
+    <span>Add New Item</span>
+  <% end %>
   <% if current_user.admin? %>
-    <%= link_to "Clear Cache", clear_cache_dashboard_index_path, method: :post, class: "btn btn-muted" %>
+    <%= link_to clear_cache_dashboard_index_path, method: :post, class: "btn btn-secondary" do %>
+      <i class="fas fa-sync-alt"></i>
+      <span>Clear Cache</span>
+    <% end %>
   <% end %>
 <% end %>
 
 <div class="dashboard">
   <section class="stats">
-    <div class="stat-card">
-      <div class="stat-card__label">Total Stock</div>
-      <div class="stat-card__value"><%= @stats[:total_products] %></div>
+    <div class="stat-card stat-card--primary">
+      <div class="stat-card__icon">
+        <i class="fas fa-boxes"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__label">Total Stock</div>
+        <div class="stat-card__value"><%= @stats[:total_products] %></div>
+        <div class="stat-card__trend">All inventory items</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__label">Available Items</div>
-      <div class="stat-card__value"><%= @stats[:available_products] %></div>
+    <div class="stat-card stat-card--success">
+      <div class="stat-card__icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__label">Available Items</div>
+        <div class="stat-card__value"><%= @stats[:available_products] %></div>
+        <div class="stat-card__trend">Ready to sell</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__label">Total Sales</div>
-      <div class="stat-card__value"><%= @stats[:total_sales] %></div>
+    <div class="stat-card stat-card--info">
+      <div class="stat-card__icon">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__label">Total Sales</div>
+        <div class="stat-card__value"><%= @stats[:total_sales] %></div>
+        <div class="stat-card__trend">Completed transactions</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__label">Total Revenue</div>
-      <div class="stat-card__value"><%= format_currency(@stats[:total_revenue]) %></div>
+    <div class="stat-card stat-card--warning">
+      <div class="stat-card__icon">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="stat-card__content">
+        <div class="stat-card__label">Total Revenue</div>
+        <div class="stat-card__value"><%= format_currency(@stats[:total_revenue]) %></div>
+        <div class="stat-card__trend">Lifetime earnings</div>
+      </div>
     </div>
   </section>
 
   <section class="panel">
     <div class="panel__header">
-      <div>
-        <h2 class="panel__title">Alerts</h2>
-        <p class="panel__subtitle">Items that need attention soon.</p>
+      <div class="panel__header-content">
+        <div class="panel__header-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div>
+          <h2 class="panel__title">Service Alerts</h2>
+          <p class="panel__subtitle">Items that need attention soon</p>
+        </div>
       </div>
+      <% if @service_due.any? %>
+        <span class="badge badge--warning"><%= @service_due.count %> Alert<%= @service_due.count != 1 ? 's' : '' %></span>
+      <% end %>
     </div>
 
     <% if @service_due.any? %>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Item Name</th>
-            <th>Due Date</th>
-            <th>Status</th>
-            <th class="text-right">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @service_due.each do |product| %>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
             <tr>
-              <td class="cell-strong"><%= link_to product.display_name, product_path(product), class: "link" %></td>
-              <td><%= product.next_service_due.strftime("%b %d, %Y") %></td>
-              <td>
-                <span class="pill pill--warn">Due Soon</span>
-              </td>
-              <td class="text-right"><%= link_to "View", product_path(product), class: "action" %></td>
+              <th>Item Name</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th class="text-right">Action</th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% @service_due.each do |product| %>
+              <tr class="table-row">
+                <td class="cell-strong">
+                  <div class="cell-with-icon">
+                    <i class="fas fa-laptop cell-icon"></i>
+                    <%= link_to product.display_name, product_path(product), class: "link" %>
+                  </div>
+                </td>
+                <td>
+                  <div class="date-cell">
+                    <i class="far fa-calendar-alt"></i>
+                    <%= product.next_service_due.strftime("%b %d, %Y") %>
+                  </div>
+                </td>
+                <td>
+                  <span class="pill pill--warn">
+                    <i class="fas fa-clock"></i>
+                    Due Soon
+                  </span>
+                </td>
+                <td class="text-right">
+                  <%= link_to product_path(product), class: "action-btn" do %>
+                    <i class="fas fa-eye"></i>
+                    View Details
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     <% else %>
-      <p class="empty">No alerts right now.</p>
+      <div class="empty-state">
+        <div class="empty-state__icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <p class="empty-state__text">No service alerts at the moment</p>
+        <p class="empty-state__subtext">All items are up to date</p>
+      </div>
     <% end %>
   </section>
 </div>
 
 <style>
-.dashboard { display: flex; flex-direction: column; gap: 16px; }
+.dashboard { display: flex; flex-direction: column; gap: 18px; }
 
-.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.stat-card { background: #fff; border: 1px solid #e6edf5; border-radius: 12px; padding: 16px; }
-.stat-card__label { font-size: 12px; color: #6b7a90; margin-bottom: 8px; font-weight: 600; }
-.stat-card__value { font-size: 22px; font-weight: 800; color: #0f172a; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; align-items: center; gap: 14px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.stat-card:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06); }
+.stat-card__icon { width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; background: rgba(37, 99, 235, 0.10); color: var(--accent); }
+.stat-card__content { flex: 1; min-width: 0; }
+.stat-card__label { font-size: 12px; letter-spacing: 0.01em; color: #6b7280; margin-bottom: 4px; font-weight: 600; }
+.stat-card__value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.1; }
+.stat-card__trend { font-size: 12px; color: #94a3b8; margin-top: 3px; }
 
-.panel { background: #fff; border: 1px solid #e6edf5; border-radius: 12px; padding: 16px; }
-.panel__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
-.panel__title { font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; }
-.panel__subtitle { font-size: 13px; color: #6b7a90; margin-top: 6px; }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05); }
+.panel__header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.panel__header-content { display: flex; align-items: center; gap: 12px; }
+.panel__header-icon { width: 36px; height: 36px; background: rgba(37, 99, 235, 0.10); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 16px; }
+.panel__title { font-size: 17px; font-weight: 700; color: var(--text); margin: 0; }
+.panel__subtitle { font-size: 13px; color: #6b7280; margin-top: 2px; }
 
+.badge { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid rgba(37, 99, 235, 0.30); background: rgba(37, 99, 235, 0.08); color: var(--text); }
+
+.table-wrapper { overflow-x: auto; margin: 0 -18px; padding: 0 18px; }
 .table { width: 100%; border-collapse: collapse; }
-.table th { text-align: left; padding: 12px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8aa0b8; border-bottom: 1px solid #edf2f7; }
-.table td { padding: 14px 10px; border-bottom: 1px solid #edf2f7; font-size: 13px; color: #0f172a; }
-.cell-strong { font-weight: 700; }
+.table th { text-align: left; padding: 11px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; font-weight: 700; border-bottom: 1px solid var(--border); }
+.table td { padding: 14px 10px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); vertical-align: middle; }
+.table-row { transition: background-color 0.12s ease; }
+.table-row:hover { background-color: #f8fafc; }
+.cell-strong { font-weight: 600; }
+.cell-with-icon { display: flex; align-items: center; gap: 8px; }
+.cell-icon { color: #4b5563; font-size: 15px; }
+.date-cell { display: flex; align-items: center; gap: 8px; color: #4b5563; font-size: 13px; }
+.date-cell i { color: #9ca3af; font-size: 13px; }
 .text-right { text-align: right; }
-.link { color: #2563eb; text-decoration: none; }
+.link { color: var(--accent); text-decoration: none; font-weight: 600; }
 .link:hover { text-decoration: underline; }
-.action { color: #2563eb; font-weight: 700; text-decoration: none; }
-.action:hover { text-decoration: underline; }
+.action-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 600; text-decoration: none; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(37, 99, 235, 0.20); transition: background-color 0.12s ease, border-color 0.12s ease; }
+.action-btn:hover { background-color: rgba(37, 99, 235, 0.08); border-color: rgba(37, 99, 235, 0.35); }
+.action-btn i { font-size: 12px; }
 
-.pill { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; }
-.pill--warn { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(234, 179, 8, 0.14); color: #92400e; border: 1px solid rgba(234, 179, 8, 0.28); }
+.pill i { font-size: 11px; }
 
-.empty { padding: 10px 0; color: #6b7a90; }
+.empty-state { text-align: center; padding: 40px 18px; }
+.empty-state__icon { width: 56px; height: 56px; margin: 0 auto 14px; background: rgba(22, 163, 74, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #15803d; font-size: 24px; }
+.empty-state__text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.empty-state__subtext { font-size: 13px; color: #6b7280; }
+
+@media (max-width: 1080px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 @media (max-width: 720px) {
-  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats { grid-template-columns: 1fr; }
+  .stat-card { padding: 14px; }
+  .panel { padding: 16px; }
+  .table-wrapper { margin: 0 -12px; padding: 0 12px; }
 }
 </style>
 
 <style>
 .top-search { position: relative; width: min(420px, 46vw); }
-.top-search__icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #8aa0b8; font-size: 14px; pointer-events: none; }
-.top-search__input { width: 100%; padding: 10px 12px 10px 32px; border-radius: 10px; border: 1px solid #e6edf5; background: #fff; font-size: 13px; outline: none; }
-.top-search__input:focus { border-color: #c9daf5; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10); }
+.top-search__icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #6b7280; font-size: 14px; pointer-events: none; }
+.top-search__input { width: 100%; padding: 11px 12px 11px 36px; border-radius: 8px; border: 1px solid var(--border); background: #fff; font-size: 14px; outline: none; transition: all 0.16s ease; color: var(--text); }
+.top-search__input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+.top-search__input::placeholder { color: #9ca3af; }
 </style>
