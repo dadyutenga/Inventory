@@ -2,8 +2,8 @@
   <div class="header-section">
     <h1>Sale Details</h1>
     <div class="header-actions">
-      <%= link_to "View Product", product_path(@sale.product), class: "btn btn-info" %>
-      <%= link_to "Back to Sales", sales_path, class: "btn btn-secondary" %>
+      <%= link_to "View Product", product_path(@sale.product), class: "btn" %>
+      <%= link_to "Back to Sales", sales_path, class: "btn" %>
     </div>
   </div>
 
@@ -64,7 +64,7 @@
         <% if @sale.product.purchase_price && @sale.sale_price %>
           <tr>
             <th>Profit/Loss</th>
-            <td class="<%= @sale.sale_price > @sale.product.purchase_price ? 'profit' : 'loss' %>">
+            <td class="profit-loss">
               <%= format_currency(@sale.sale_price - @sale.product.purchase_price) %>
               (<%= number_to_percentage(((@sale.sale_price - @sale.product.purchase_price) / @sale.product.purchase_price * 100), precision: 1) %>)
             </td>
@@ -77,21 +77,17 @@
 
 <style>
 .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .header-actions { display: flex; gap: 10px; }
-.sale-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; }
-.detail-section { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
-.detail-section h2 { margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #007bff; font-size: 20px; }
+.sale-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
+.detail-section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; box-shadow: 0 3px 10px rgba(15,23,42,0.06); }
+.detail-section h2 { margin: 0 0 14px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 18px; color: var(--text); }
 .detail-table { width: 100%; border-collapse: collapse; }
-.detail-table th { text-align: left; padding: 12px; background: #f8f9fa; font-weight: 600; width: 40%; border-bottom: 1px solid #dee2e6; }
-.detail-table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+.detail-table th { text-align: left; padding: 11px; background: #f7f7f8; font-weight: 600; width: 42%; border-bottom: 1px solid var(--border); color: var(--text); }
+.detail-table td { padding: 11px; border-bottom: 1px solid var(--border); color: #374151; }
 .detail-table tr:last-child th, .detail-table tr:last-child td { border-bottom: none; }
-.detail-table a { color: #007bff; text-decoration: none; }
+.detail-table a { color: var(--accent); text-decoration: none; }
 .detail-table a:hover { text-decoration: underline; }
-.price { font-weight: bold; color: #28a745; font-size: 18px; }
-.profit { font-weight: bold; color: #28a745; }
-.loss { font-weight: bold; color: #dc3545; }
-.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
-.btn-info { background: #17a2b8; color: white; }
-.btn-secondary { background: #6c757d; color: white; }
+.price { font-weight: 700; color: var(--text); font-size: 16px; }
+.profit-loss { font-weight: 700; color: var(--text); }
 </style>

@@ -13,8 +13,8 @@
         <%= f.text_field :action_type, placeholder: "Action type", value: params[:action_type], class: "form-control" %>
         <%= f.date_field :from_date, value: params[:from_date], class: "form-control" %>
         <%= f.date_field :to_date, value: params[:to_date], class: "form-control" %>
-        <%= f.submit "Filter", class: "btn btn-secondary" %>
-        <%= link_to "Clear", activity_logs_path, class: "btn btn-outline" %>
+        <%= f.submit "Filter", class: "btn" %>
+        <%= link_to "Clear", activity_logs_path, class: "btn" %>
       </div>
     <% end %>
   </div>
@@ -57,20 +57,19 @@
 
 <style>
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.header-section { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-.subhead { color: #6c757d; margin: 0; }
-.filters { background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.header-section { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.subhead { color: var(--muted); margin: 0; font-size: 14px; }
+.filters { background: var(--card); padding: 14px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 18px; }
 .filter-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: center; }
 .filter-group { display: contents; }
-.form-control { padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; }
-.btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 14px; }
-.btn-secondary { background: #6c757d; color: white; }
-.btn-outline { background: white; color: #6c757d; border: 1px solid #6c757d; }
+.form-control { padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+.form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,138,117,0.15); }
 .logs-table-wrapper { overflow-x: auto; }
-.logs-table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.logs-table th, .logs-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
-.logs-table thead { background: #007bff; color: white; }
+.logs-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); }
+.logs-table th, .logs-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; text-align: left; font-size: 13px; }
+.logs-table thead { background: rgba(45,138,117,0.08); color: var(--text); border-bottom: 1px solid var(--border); }
 .logs-table pre { margin: 0; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
-.no-results { padding: 20px; text-align: center; background: #f5f5f5; border-radius: 8px; }
+.logs-table tbody tr:hover { background: #f6f7f8; }
+.no-results { padding: 18px; text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
 .user-agent { max-width: 240px; }
 </style>

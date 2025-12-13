@@ -1,7 +1,7 @@
 <div class="container">
   <div class="header-section">
     <h1>Sales History</h1>
-    <%= link_to "Record New Sale", new_sale_path, class: "btn btn-primary" %>
+    <%= link_to "Record New Sale", new_sale_path, class: "btn" %>
   </div>
 
   <% if @sales.any? %>
@@ -27,7 +27,7 @@
             <td><%= sale.sold_at.strftime("%B %d, %Y") %></td>
             <td class="price"><%= format_currency(sale.sale_price) %></td>
             <td>
-              <%= link_to "View", sale_path(sale), class: "btn btn-sm btn-info" %>
+              <%= link_to "View", sale_path(sale), class: "btn btn-sm" %>
             </td>
           </tr>
         <% end %>
@@ -42,17 +42,13 @@
 
 <style>
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.sales-table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.sales-table thead { background: #007bff; color: white; }
-.sales-table th, .sales-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-.sales-table tbody tr:hover { background: #f8f9fa; }
-.sales-table a { color: #007bff; text-decoration: none; }
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.sales-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); box-shadow: 0 3px 10px rgba(15,23,42,0.06); }
+.sales-table thead { background: rgba(45,138,117,0.10); color: var(--text); }
+.sales-table th, .sales-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+.sales-table tbody tr:hover { background: #f6f7f8; }
+.sales-table a { color: var(--accent); text-decoration: none; }
 .sales-table a:hover { text-decoration: underline; }
-.price { font-weight: bold; color: #28a745; }
-.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
-.btn-primary { background: #007bff; color: white; }
-.btn-info { background: #17a2b8; color: white; }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
-.no-results { text-align: center; padding: 40px; background: #f5f5f5; border-radius: 8px; }
+.price { font-weight: 700; color: var(--text); }
+.no-results { text-align: center; padding: 32px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
 </style>

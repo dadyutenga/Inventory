@@ -2,11 +2,11 @@
   <div class="header-section">
     <h1><%= @product.display_name %></h1>
     <div class="header-actions">
-      <%= link_to "Edit", edit_product_path(@product), class: "btn btn-warning" %>
+      <%= link_to "Edit", edit_product_path(@product), class: "btn" %>
       <% if current_user.admin? %>
-        <%= button_to "Delete", product_path(@product), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
+        <%= button_to "Delete", product_path(@product), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn" %>
       <% end %>
-      <%= link_to "Back to Inventory", products_path, class: "btn btn-secondary" %>
+      <%= link_to "Back to Inventory", products_path, class: "btn" %>
     </div>
   </div>
 
@@ -17,7 +17,7 @@
           <% @product.images.each do |image| %>
             <div class="product-image-item">
               <%= image_tag image.variant(resize_to_limit: [600, 400]) %>
-              <%= button_to "Remove", remove_image_product_path(@product, image_id: image.id), method: :delete, class: "btn btn-sm btn-danger" %>
+              <%= button_to "Remove", remove_image_product_path(@product, image_id: image.id), method: :delete, class: "btn btn-sm" %>
             </div>
           <% end %>
         <% else %>
@@ -31,8 +31,8 @@
           <tr><th>Category</th><td><%= @product.category.humanize %></td></tr>
           <tr><th>SKU</th><td><%= @product.sku %></td></tr>
           <tr><th>Serial Number</th><td><%= @product.serial_number %></td></tr>
-          <tr><th>Status</th><td><span class="badge badge-<%= @product.status %>"><%= @product.status.humanize %></span></td></tr>
-          <tr><th>Condition</th><td><span class="badge badge-<%= @product.condition %>"><%= @product.condition.humanize %></span></td></tr>
+          <tr><th>Status</th><td><span class="badge"><%= @product.status.humanize %></span></td></tr>
+          <tr><th>Condition</th><td><span class="badge"><%= @product.condition.humanize %></span></td></tr>
           <tr><th>Brand</th><td><%= @product.brand %></td></tr>
           <tr><th>Model</th><td><%= @product.model %></td></tr>
           <tr><th>Model Number</th><td><%= @product.model_number %></td></tr>
@@ -59,27 +59,14 @@
 .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
 .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .header-actions { display: flex; gap: 10px; }
-.product-details { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-.product-main { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
-.product-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-bottom: 15px; }
-.product-image-item { position: relative; }
-.product-image-item img { width: 100%; border-radius: 6px; }
-.product-info h2 { margin-top: 0; }
+.product-details { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; }
+.product-main { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; box-shadow: 0 3px 10px rgba(15,23,42,0.06); }
+.product-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.product-image-item img { width: 100%; border-radius: 8px; }
+.product-info h2 { margin-top: 0; font-size: 18px; color: var(--text); }
 .detail-table { width: 100%; border-collapse: collapse; }
-.detail-table th { text-align: left; padding: 8px; background: #f8f9fa; width: 40%; }
-.detail-table td { padding: 8px; border-bottom: 1px solid #eee; }
-.badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-.badge-available { background: #28a745; color: white; }
-.badge-allocated { background: #17a2b8; color: white; }
-.badge-in_service { background: #ffc107; color: black; }
-.badge-retired { background: #dc3545; color: white; }
-.badge-sold { background: #6c757d; color: white; }
-.badge-new_condition { background: #17a2b8; color: white; }
-.badge-used { background: #6c757d; color: white; }
-.badge-refurbished { background: #007bff; color: white; }
-.product-specific { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
-.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
-.btn-warning { background: #ffc107; color: black; }
-.btn-secondary { background: #6c757d; color: white; }
-.btn-danger { background: #dc3545; color: white; }
+.detail-table th { text-align: left; padding: 8px; background: #f7f7f8; width: 40%; font-weight: 600; color: var(--text); }
+.detail-table td { padding: 8px; border-bottom: 1px solid var(--border); color: #374151; }
+.badge { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(45,138,117,0.10); color: var(--accent); border: 1px solid rgba(45,138,117,0.25); }
+.product-specific { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; box-shadow: 0 3px 10px rgba(15,23,42,0.06); }
 </style>
