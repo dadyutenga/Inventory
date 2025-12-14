@@ -1,14 +1,23 @@
-<% case product.category.to_s %>
-<% when "laptop" %>
+<div class="equipment-fieldset" data-equipment-category="laptop">
   <%= render "products/equipment_fields/laptop_fields", form: form %>
-<% when "mouse" %>
+</div>
+
+<div class="equipment-fieldset" data-equipment-category="mouse">
   <%= render "products/equipment_fields/mouse_fields", form: form %>
-<% when "keyboard" %>
+</div>
+
+<div class="equipment-fieldset" data-equipment-category="keyboard">
   <%= render "products/equipment_fields/keyboard_fields", form: form %>
-<% when "server" %>
+</div>
+
+<div class="equipment-fieldset" data-equipment-category="server">
   <%= render "products/equipment_fields/server_fields", form: form %>
-<% when "desktop_pc" %>
+</div>
+
+<div class="equipment-fieldset" data-equipment-category="desktop_pc">
   <%= render "products/equipment_fields/desktop_pc_fields", form: form %>
-<% else %>
+</div>
+
+<div class="equipment-fieldset" data-equipment-category="fallback">
   <p>No specific fields for this category.</p>
-<% end %>
+</div>

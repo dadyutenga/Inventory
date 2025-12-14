@@ -24,6 +24,7 @@ class ProductsController < ApplicationController
     @product = Product.new(product_params.except(:category))
     @product.category = product_params[:category]
     @product.productable = build_productable(@product.category, equipment_params(@product.category))
+    @product.assign_attributes(created_by_id: current_user.id, updated_by_id: current_user.id) if @product.respond_to?(:created_by_id=)
 
     if @product.save
       ProcessProductImagesJob.perform_later(@product.id) if @product.images.attached?
@@ -49,6 +50,7 @@ class ProductsController < ApplicationController
 
     success = ActiveRecord::Base.transaction do
       @product.productable.update!(equipment_attrs) if equipment_attrs.present?
+      @product.assign_attributes(updated_by_id: current_user.id) if @product.respond_to?(:updated_by_id=)
       @product.update(product_params.except(:category))
     end
 
