@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   resources :dashboard, only: [ :index ] do
     collection do
       post :clear_cache
+      get :clear_cache
     end
   end
 

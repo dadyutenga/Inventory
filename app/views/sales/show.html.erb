@@ -65,8 +65,8 @@
           <tr>
             <th>Profit/Loss</th>
             <td class="profit-loss">
-              <%= format_currency(@sale.sale_price - @sale.product.purchase_price) %>
-              (<%= number_to_percentage(((@sale.sale_price - @sale.product.purchase_price) / @sale.product.purchase_price * 100), precision: 1) %>)
+              <% diff = @sale.sale_price - @sale.product.purchase_price %>
+              <%= diff >= 0 ? "Profit: #{format_currency(diff)}" : "Loss: #{format_currency(diff.abs)}" %>
             </td>
           </tr>
         <% end %>
