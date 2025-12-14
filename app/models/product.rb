@@ -26,7 +26,7 @@ class Product < ApplicationRecord
 
   validates :name, :category, :sku, :serial_number, presence: true
   validates :sku, :serial_number, uniqueness: true
-  validates :purchase_price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :purchase_price, numericality: { greater_than_or_equal_to: 0, less_than: 10_000_000_000 }, allow_nil: true
 
   scope :by_category, ->(category) { where(category: category) if category.present? }
   scope :by_status, ->(status) { where(status: status) if status.present? }
