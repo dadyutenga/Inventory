@@ -108,7 +108,26 @@
     <div class="form-row">
       <div class="form-group full-width">
         <%= form.label :images, "Images" %>
-        <%= form.file_field :images, multiple: true, class: "form-control" %>
+        
+        <% if product.persisted? && product.images.attached? %>
+          <div class="existing-images">
+            <p class="existing-images-label">Current Images:</p>
+            <div class="image-grid">
+              <% product.images.each do |image| %>
+                <div class="image-item">
+                  <%= image_tag image, style: "width: 120px; height: 80px; object-fit: cover; border-radius: 4px;" %>
+                  <%= button_to "Remove", remove_image_product_path(product, image_id: image.id), method: :delete, 
+                                class: "remove-image-btn", 
+                                data: { turbo_confirm: "Remove this image?" }, 
+                                form: { style: "display: inline;" } %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+        
+        <%= form.file_field :images, multiple: true, accept: "image/*", class: "form-control image-upload" %>
+        <p class="upload-help">Select multiple images (JPG, PNG, GIF). Hold Ctrl/Cmd to select multiple files.</p>
       </div>
     </div>
   </div>
@@ -139,6 +158,15 @@
 .form-actions { display: flex; gap: 10px; margin-top: 20px; }
 .equipment-fieldset { display: none; }
 .equipment-fieldset.is-active { display: block; }
+.existing-images { margin-bottom: 12px; }
+.existing-images-label { font-size: 13px; color: #6b7280; margin-bottom: 8px; font-weight: 600; }
+.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+.image-item { position: relative; }
+.remove-image-btn { position: absolute; top: 4px; right: 4px; background: rgba(220,38,38,0.9); color: white; border: none; padding: 4px 6px; font-size: 11px; border-radius: 4px; cursor: pointer; }
+.remove-image-btn:hover { background: rgba(220,38,38,1); }
+.image-upload { border: 2px dashed var(--border); padding: 20px; text-align: center; }
+.image-upload:hover { border-color: var(--accent); }
+.upload-help { font-size: 12px; color: #6b7280; margin-top: 6px; }
 </style>
 
 <script>
