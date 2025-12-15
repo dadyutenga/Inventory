@@ -16,7 +16,7 @@
         <% if @product.images.attached? %>
           <% @product.images.each do |image| %>
             <div class="product-image-item">
-              <%= image_tag image.variant(resize_to_limit: [600, 400]) %>
+              <%= image_tag image, style: "max-width: 600px; max-height: 400px; object-fit: cover;" %>
               <%= button_to "Remove", remove_image_product_path(@product, image_id: image.id), method: :delete, class: "btn btn-sm" %>
             </div>
           <% end %>

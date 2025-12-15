@@ -28,7 +28,7 @@
         <div class="product-card">
           <div class="product-image">
             <% if product.images.attached? %>
-              <%= image_tag product.images.first.variant(resize_to_limit: [300, 200]), alt: product.display_name %>
+              <%= image_tag product.images.first, alt: product.display_name, style: "max-width: 300px; max-height: 200px; object-fit: cover;" %>
             <% else %>
               <div class="no-image">No Image</div>
             <% end %>
