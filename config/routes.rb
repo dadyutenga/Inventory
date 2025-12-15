@@ -34,6 +34,15 @@ Rails.application.routes.draw do
   # Activity logs (admin only)
   resources :activity_logs, only: [ :index ]
 
+  # Public API routes
+  namespace :api do
+    namespace :v1 do
+      # Get all products or filter by type
+      get "products", to: "products#index"
+      get "products/:product_type", to: "products#index", constraints: { product_type: /laptop|mouse|keyboard|server|desktop_pc|accessory/ }
+    end
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check

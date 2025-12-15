@@ -31,6 +31,11 @@ class Product < ApplicationRecord
   validates :purchase_price, numericality: { greater_than_or_equal_to: 0, less_than: 10_000_000_000 }, allow_nil: true
   validate :purchase_price_within_range
 
+  # Cache invalidation callbacks
+  after_save :invalidate_api_cache
+  after_destroy :invalidate_api_cache
+  after_touch :invalidate_api_cache
+
   scope :by_category, ->(category) { where(category: category) if category.present? }
   scope :by_status, ->(status) { where(status: status) if status.present? }
   scope :search, ->(query) {
@@ -60,5 +65,15 @@ class Product < ApplicationRecord
     if value.abs >= 10_000_000_000
       errors.add(:purchase_price, "must be less than 10,000,000,000")
     end
+  end
+
+  def invalidate_api_cache
+    # Invalidate all product cache keys
+    Rails.cache.delete_matched("api:v1:products*")
+
+    # Log cache invalidation for debugging
+    Rails.logger.info "API cache invalidated for product: #{id}"
+  rescue => e
+    Rails.logger.error "Failed to invalidate API cache: #{e.message}"
   end
 end
