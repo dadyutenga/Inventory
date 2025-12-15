@@ -40,6 +40,8 @@ Rails.application.routes.draw do
       # Get all products or filter by type
       get "products", to: "products#index"
       get "products/:product_type", to: "products#index", constraints: { product_type: /laptop|mouse|keyboard|server|desktop_pc|accessory/ }
+      # Catch-all for invalid product types
+      get "products/*invalid_type", to: "products#invalid_product_type"
     end
   end
 

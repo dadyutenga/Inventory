@@ -60,6 +60,14 @@ class Api::V1::ProductsController < Api::BaseController
     end
   end
 
+  def invalid_product_type
+    render_json_response(
+      data: nil,
+      message: "Invalid product type. Valid types: laptop, mouse, keyboard, server, desktop_pc, accessory",
+      status: :not_found
+    )
+  end
+
   private
 
   def sanitize_product_type(type)

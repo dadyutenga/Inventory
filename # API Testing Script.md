@@ -5,32 +5,91 @@
 # Run this in terminal: rails server
 
 # Test 1: Get all products
+echo "=== Test 1: Get all products ==="
 curl -X GET "http://localhost:3000/api/v1/products" \
   -H "Accept: application/json" \
   -H "User-Agent: API-Test-Script"
 
+echo -e "\n\n"
+
 # Test 2: Get laptops only
+echo "=== Test 2: Get laptops only ==="
 curl -X GET "http://localhost:3000/api/v1/products/laptop" \
   -H "Accept: application/json" \
   -H "User-Agent: API-Test-Script"
 
+echo -e "\n\n"
+
 # Test 3: Get mice only
+echo "=== Test 3: Get mice only ==="
 curl -X GET "http://localhost:3000/api/v1/products/mouse" \
   -H "Accept: application/json" \
   -H "User-Agent: API-Test-Script"
 
-# Test 4: Test rate limiting (run this multiple times quickly)
-for i in {1..10}; do
-  curl -X GET "http://localhost:3000/api/v1/products" \
-    -H "Accept: application/json" \
-    -H "User-Agent: API-Test-Script-$i" \
-    -w "Request $i: %{http_code}\n"
-done
+echo -e "\n\n"
 
-# Test 5: Test invalid product type
+# Test 4: Get desktop PCs only
+echo "=== Test 4: Get desktop PCs only ==="
+curl -X GET "http://localhost:3000/api/v1/products/desktop_pc" \
+  -H "Accept: application/json" \
+  -H "User-Agent: API-Test-Script"
+
+echo -e "\n\n"
+
+# Test 5: Get servers only
+echo "=== Test 5: Get servers only ==="
+curl -X GET "http://localhost:3000/api/v1/products/server" \
+  -H "Accept: application/json" \
+  -H "User-Agent: API-Test-Script"
+
+echo -e "\n\n"
+
+# Test 6: Get accessories only
+echo "=== Test 6: Get accessories only ==="
+curl -X GET "http://localhost:3000/api/v1/products/accessory" \
+  -H "Accept: application/json" \
+  -H "User-Agent: API-Test-Script"
+
+echo -e "\n\n"
+
+# Test 7: Get keyboards (may be empty)
+echo "=== Test 7: Get keyboards ==="
+curl -X GET "http://localhost:3000/api/v1/products/keyboard" \
+  -H "Accept: application/json" \
+  -H "User-Agent: API-Test-Script"
+
+echo -e "\n\n"
+
+# Test 8: Test invalid product type (should return 404 error)
+echo "=== Test 8: Invalid product type ==="
 curl -X GET "http://localhost:3000/api/v1/products/invalid_type" \
   -H "Accept: application/json" \
   -H "User-Agent: API-Test-Script"
+
+echo -e "\n\n"
+
+# Test 9: Test rate limiting (run this multiple times quickly)
+echo "=== Test 9: Rate limiting test ==="
+for i in {1..10}; do
+  echo "Request $i:"
+  curl -X GET "http://localhost:3000/api/v1/products" \
+    -H "Accept: application/json" \
+    -H "User-Agent: API-Test-Script-$i" \
+    -w "HTTP Status: %{http_code}\n" \
+    -s -o /dev/null
+done
+
+echo -e "\n"
+
+# Test 10: Performance/caching test
+echo "=== Test 10: Cache performance test ==="
+echo "First request (cache miss):"
+time curl -s -X GET "http://localhost:3000/api/v1/products" -H "Accept: application/json" > /dev/null
+
+echo "Second request (cache hit):"
+time curl -s -X GET "http://localhost:3000/api/v1/products" -H "Accept: application/json" > /dev/null
+
+echo -e "\n"
 
 # Test 6: Test with Python
 # python3 -c "
