@@ -49,7 +49,17 @@ class ApplicationController < ActionController::Base
     raise ExceptionHandler::MissingToken unless token
 
     decoded = JsonWebToken.decode(token)
-    @current_user = User.find(decoded[:user_id])
+    user_id = decoded[:user_id]
+
+    # Handle both old integer IDs and new UUIDs during transition
+    @current_user = if user_id.to_s.match?(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i)
+      User.find(user_id)
+    else
+      # Legacy integer ID lookup (will be removed after token refresh)
+      User.where("id::text = ?", user_id.to_s).first
+    end
+
+    raise ActiveRecord::RecordNotFound unless @current_user
   rescue ActiveRecord::RecordNotFound
     raise ExceptionHandler::InvalidToken
   end

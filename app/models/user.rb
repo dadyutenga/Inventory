@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  self.primary_key = "id"
+
   # Use bcrypt for password hashing instead of Devise
   has_secure_password
 

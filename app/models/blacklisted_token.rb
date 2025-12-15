@@ -1,4 +1,6 @@
 class BlacklistedToken < ApplicationRecord
+  self.primary_key = "id"
+
   validates :token_digest, presence: true, uniqueness: true
   validates :expires_at, presence: true
 

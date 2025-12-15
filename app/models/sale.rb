@@ -1,4 +1,6 @@
 class Sale < ApplicationRecord
+  self.primary_key = "id"
+
   belongs_to :product
   belongs_to :sold_by, class_name: "User"
 

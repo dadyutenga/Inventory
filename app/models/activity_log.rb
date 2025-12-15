@@ -1,7 +1,9 @@
 class ActivityLog < ApplicationRecord
+  self.primary_key = "id"
+
   belongs_to :user
 
-  validates :action_type, :entity_type, :entity_id, presence: true
+  validates :action_type, :entity_type, :entity_id, :user_id, presence: true
 
   scope :by_user, ->(user_id) { where(user_id: user_id) if user_id.present? }
   scope :by_entity, ->(entity_type, entity_id = nil) {

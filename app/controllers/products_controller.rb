@@ -94,6 +94,8 @@ class ProductsController < ApplicationController
 
   def set_product
     @product = Product.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to products_path, alert: "Product not found."
   end
 
   def set_category

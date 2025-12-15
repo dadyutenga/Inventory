@@ -2,6 +2,8 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+# Note: With UUID primary keys, we use find_or_create_by with unique fields like email/serial_number
+
 # Create admin user
 admin = User.find_or_create_by!(email: "admin@ditronics.com") do |user|
   user.name = "Admin User"

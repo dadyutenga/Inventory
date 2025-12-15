@@ -1,4 +1,6 @@
 class Product < ApplicationRecord
+  self.primary_key = "id"
+
   belongs_to :productable, polymorphic: true
   belongs_to :allocated_to, class_name: "User", optional: true
 

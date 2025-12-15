@@ -36,6 +36,8 @@ class SalesController < ApplicationController
 
   def set_sale
     @sale = Sale.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to sales_path, alert: "Sale not found."
   end
 
   def sale_params
