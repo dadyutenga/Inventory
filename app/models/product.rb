@@ -27,6 +27,7 @@ class Product < ApplicationRecord
   validates :name, :category, :sku, :serial_number, presence: true
   validates :sku, :serial_number, uniqueness: true
   validates :purchase_price, numericality: { greater_than_or_equal_to: 0, less_than: 10_000_000_000 }, allow_nil: true
+  validate :purchase_price_within_range
 
   scope :by_category, ->(category) { where(category: category) if category.present? }
   scope :by_status, ->(status) { where(status: status) if status.present? }
@@ -45,5 +46,17 @@ class Product < ApplicationRecord
 
   def productable_label
     productable&.class&.name || "Item"
+  end
+
+  private
+
+  def purchase_price_within_range
+    return if purchase_price.blank?
+    value = BigDecimal(purchase_price.to_s) rescue nil
+    return errors.add(:purchase_price, "is not a valid number") unless value
+
+    if value.abs >= 10_000_000_000
+      errors.add(:purchase_price, "must be less than 10,000,000,000")
+    end
   end
 end

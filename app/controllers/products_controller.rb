@@ -37,6 +37,9 @@ class ProductsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RangeError
+    @product.errors.add(:purchase_price, "is too large")
+    render :new, status: :unprocessable_entity
   end
 
   def edit
@@ -67,6 +70,9 @@ class ProductsController < ApplicationController
       render :edit, status: :unprocessable_entity
     end
   rescue ActiveRecord::RecordInvalid
+    render :edit, status: :unprocessable_entity
+  rescue ActiveRecord::RangeError
+    @product.errors.add(:purchase_price, "is too large")
     render :edit, status: :unprocessable_entity
   end
 
