@@ -49,12 +49,12 @@ class Api::V1::ProductsController < Api::BaseController
       render_json_response(data: serialized_products, meta: meta)
 
     rescue => e
-      Rails.logger.error "Products API Error: #{e.message}"
-      Rails.logger.error e.backtrace.join("\n")
+      Rails.logger.error "Products API Error: #{e.class} - #{e.message}"
+      Rails.logger.error e.backtrace.join("\n") if e.backtrace
 
       render_json_response(
         data: nil,
-        message: "Failed to fetch products",
+        message: "Failed to fetch products: #{e.message}",
         status: :internal_server_error
       )
     end
@@ -86,8 +86,8 @@ class Api::V1::ProductsController < Api::BaseController
     query = Product.all
 
     if product_type.present?
-      # Use the enum method for filtering
-      query = query.public_send("category_#{product_type}")
+      # Use where clause instead of enum method to be safe
+      query = query.where(category: product_type)
     end
 
     query
@@ -101,14 +101,18 @@ class Api::V1::ProductsController < Api::BaseController
         category: product.category,
         brand: product.brand,
         model: product.model,
+        model_number: product.model_number,
         sku: product.sku,
         serial_number: product.serial_number,
         condition: product.condition,
         status: product.status,
         purchase_price: product.purchase_price&.to_f,
         purchase_date: product.purchase_date&.iso8601,
-        warranty_expires: product.warranty_expires&.iso8601,
-        description: product.description,
+        last_service_date: product.last_service_date&.iso8601,
+        next_service_due: product.next_service_due&.iso8601,
+        location: product.location,
+        vendor: product.vendor,
+        notes: product.notes,
         images: serialize_images(product.images),
         specifications: serialize_specifications(product.productable),
         created_at: product.created_at.iso8601,
@@ -130,13 +134,18 @@ class Api::V1::ProductsController < Api::BaseController
           url: url_for(image)
         }
 
-        # Only add variants for image files
-        if image.content_type&.start_with?("image/")
-          base_data[:variants] = {
-            thumbnail: url_for(image.variant(resize_to_limit: [ 150, 150 ])),
-            medium: url_for(image.variant(resize_to_limit: [ 400, 400 ])),
-            large: url_for(image.variant(resize_to_limit: [ 800, 800 ]))
-          }
+        # Only add variants for image files and if Active Storage is configured properly
+        if image.content_type&.start_with?("image/") && image.variable?
+          begin
+            base_data[:variants] = {
+              thumbnail: url_for(image.variant(resize_to_limit: [ 150, 150 ])),
+              medium: url_for(image.variant(resize_to_limit: [ 400, 400 ])),
+              large: url_for(image.variant(resize_to_limit: [ 800, 800 ]))
+            }
+          rescue => variant_error
+            Rails.logger.warn "Variant generation failed for image #{image.id}: #{variant_error.message}"
+            # Continue without variants
+          end
         end
 
         base_data
@@ -145,10 +154,10 @@ class Api::V1::ProductsController < Api::BaseController
         {
           id: image.id,
           filename: image.filename.to_s,
-          content_type: image.content_type,
-          byte_size: image.byte_size,
+          content_type: image.content_type || "unknown",
+          byte_size: image.byte_size || 0,
           url: url_for(image),
-          error: "Variant generation failed"
+          error: "Image processing failed"
         }
       end
     end
@@ -176,6 +185,7 @@ class Api::V1::ProductsController < Api::BaseController
   def serialize_laptop_specs(laptop)
     {
       cpu: laptop.cpu,
+      cpu_generation: laptop.cpu_generation,
       ram_size: laptop.ram_size,
       ram_type: laptop.ram_type,
       storage_capacity: laptop.storage_capacity,
@@ -183,44 +193,50 @@ class Api::V1::ProductsController < Api::BaseController
       gpu: laptop.gpu,
       screen_size: laptop.screen_size,
       screen_resolution: laptop.screen_resolution,
+      display_type: laptop.display_type,
       battery_capacity: laptop.battery_capacity,
       ports: laptop.ports,
       operating_system: laptop.operating_system,
-      weight: laptop.weight&.to_f
+      weight: laptop.weight&.to_f,
+      keyboard_type: laptop.keyboard_type,
+      keyboard_backlight: laptop.keyboard_backlight,
+      webcam: laptop.webcam,
+      microphone: laptop.microphone,
+      wifi_type: laptop.wifi_type,
+      bluetooth_version: laptop.bluetooth_version,
+      license_key: laptop.license_key
     }.compact
   end
 
   def serialize_mouse_specs(mouse)
     {
-      mouse_type: mouse.mouse_type,
-      connection_type: mouse.connection_type,
+      connectivity: mouse.connectivity,
       dpi: mouse.dpi,
-      buttons_count: mouse.buttons_count,
-      features: mouse.features
+      buttons: mouse.buttons,
+      color: mouse.color,
+      rechargeable: mouse.rechargeable
     }.compact
   end
 
   def serialize_keyboard_specs(keyboard)
     {
-      keyboard_type: keyboard.keyboard_type,
-      connection_type: keyboard.connection_type,
+      connectivity: keyboard.connectivity,
       layout: keyboard.layout,
       switch_type: keyboard.switch_type,
       backlit: keyboard.backlit,
-      features: keyboard.features
+      wireless: keyboard.wireless
     }.compact
   end
 
   def serialize_server_specs(server)
     {
-      cpu: server.cpu,
+      cpu_model: server.cpu_model,
+      cpu_count: server.cpu_count,
       ram_size: server.ram_size,
       storage_capacity: server.storage_capacity,
       storage_type: server.storage_type,
-      raid_config: server.raid_config,
-      network_ports: server.network_ports,
-      power_supply: server.power_supply,
-      form_factor: server.form_factor,
+      raid_level: server.raid_level,
+      rack_units: server.rack_units,
       operating_system: server.operating_system
     }.compact
   end
@@ -232,10 +248,7 @@ class Api::V1::ProductsController < Api::BaseController
       storage_capacity: desktop_pc.storage_capacity,
       storage_type: desktop_pc.storage_type,
       gpu: desktop_pc.gpu,
-      motherboard: desktop_pc.motherboard,
-      power_supply: desktop_pc.power_supply,
-      case_type: desktop_pc.case_type,
-      operating_system: desktop_pc.operating_system
+      form_factor: desktop_pc.form_factor
     }.compact
   end
 end

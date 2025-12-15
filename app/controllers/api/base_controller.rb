@@ -53,8 +53,12 @@ class Api::BaseController < ActionController::Base
   end
 
   def render_json_response(data: nil, message: nil, status: :ok, meta: {})
+    # Convert status to HTTP status code if it's a symbol
+    status_code = status.is_a?(Symbol) ? Rack::Utils::SYMBOL_TO_STATUS_CODE[status] : status
+    is_success = status_code >= 200 && status_code < 300
+
     response_hash = {
-      success: status.to_s.start_with?("2"),
+      success: is_success,
       data: data,
       meta: meta
     }
