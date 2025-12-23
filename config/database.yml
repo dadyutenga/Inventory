@@ -88,7 +88,13 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  # Use DATABASE_URL environment variable (set by Docker Compose)
-  # This will automatically parse: postgres://user:pass@host:port/database
-  url: <%= ENV['DATABASE_URL'] %>
+  primary: &primary_production
+    <<: *default
+    # Use DATABASE_URL environment variable (set by Docker Compose)
+    # This will automatically parse: postgres://user:pass@host:port/database
+    url: <%= ENV['DATABASE_URL'] %>
+  
+  # All solid gems use the same database as primary
+  cache: *primary_production
+  queue: *primary_production
+  cable: *primary_production
