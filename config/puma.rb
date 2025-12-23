@@ -65,7 +65,7 @@ on_worker_boot do
 end
 
 # Solid Queue integration (optional - runs queue in Puma process)
-plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
+plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"] == "true"
 
 # -----------------------------------------------------------------------------
 # MISC
