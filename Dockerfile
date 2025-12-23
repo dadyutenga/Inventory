@@ -19,7 +19,7 @@ RUN apk add --no-cache \
     build-base \
     git \
     libpq-dev \
-    libyaml-dev \
+    yaml-dev \
     vips-dev \
     tzdata \
     && rm -rf /var/cache/apk/*
@@ -71,7 +71,7 @@ FROM docker.io/library/ruby:$RUBY_VERSION-alpine AS runtime
 # Install ONLY runtime dependencies - no build tools
 RUN apk add --no-cache \
     libpq \
-    libyaml \
+    yaml \
     vips \
     tzdata \
     curl \
