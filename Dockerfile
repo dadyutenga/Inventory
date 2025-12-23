@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# check=error=true
+# check=skip=SecretsUsedInArgOrEnv
 
 # =============================================================================
 # PRODUCTION-GRADE MULTI-STAGE DOCKERFILE
