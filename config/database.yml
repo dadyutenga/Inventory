@@ -88,20 +88,7 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: inventory_production
-    username: inventory
-    password: <%= ENV["INVENTORY_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: inventory_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: inventory_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: inventory_production_cable
-    migrations_paths: db/cable_migrate
+  <<: *default
+  # Use DATABASE_URL environment variable (set by Docker Compose)
+  # This will automatically parse: postgres://user:pass@host:port/database
+  url: <%= ENV['DATABASE_URL'] %>
