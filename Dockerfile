@@ -1,76 +1,119 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t inventory .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name inventory inventory
+# =============================================================================
+# PRODUCTION-GRADE MULTI-STAGE DOCKERFILE
+# Ultra-slim, high-performance Rails deployment
+# =============================================================================
 
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
-
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.3.1
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
-# Rails app lives here
-WORKDIR /rails
+# =============================================================================
+# STAGE 1: BUILD STAGE
+# Contains all build tools, compilers, dev headers - discarded after build
+# =============================================================================
+FROM docker.io/library/ruby:$RUBY_VERSION-alpine AS builder
 
-# Install base packages
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
-    ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Install build dependencies only - these won't be in final image
+RUN apk add --no-cache \
+    build-base \
+    git \
+    libpq-dev \
+    libyaml-dev \
+    vips-dev \
+    tzdata \
+    && rm -rf /var/cache/apk/*
 
-# Set production environment variables and enable jemalloc for reduced memory usage and latency.
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
+WORKDIR /app
+
+# Configure bundler for production - exclude dev/test groups
+ENV BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development" \
-    LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+    BUNDLE_WITHOUT="development:test" \
+    BUNDLE_JOBS="4" \
+    BUNDLE_RETRY="3"
 
-# Throw-away build stage to reduce size of final image
-FROM base AS build
+# Install gems first (layer caching optimization)
+COPY Gemfile Gemfile.lock ./
+COPY vendor ./vendor
 
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Install application gems
-COPY Gemfile Gemfile.lock vendor ./
-
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
-    bundle exec bootsnap precompile -j 1 --gemfile
+RUN bundle config set --local without 'development test' && \
+    bundle install --jobs=4 --retry=3 && \
+    # Strip gem caches, git dirs, build artifacts
+    rm -rf ~/.bundle/ \
+           "${BUNDLE_PATH}"/ruby/*/cache \
+           "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git \
+           "${BUNDLE_PATH}"/ruby/*/gems/*/ext \
+           "${BUNDLE_PATH}"/ruby/*/gems/*/test \
+           "${BUNDLE_PATH}"/ruby/*/gems/*/spec \
+           "${BUNDLE_PATH}"/ruby/*/gems/*/*.md \
+           "${BUNDLE_PATH}"/ruby/*/gems/*/*.txt
 
 # Copy application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times.
-# -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
-RUN bundle exec bootsnap precompile -j 1 app/ lib/
+# Precompile bootsnap for faster boot
+RUN bundle exec bootsnap precompile --gemfile app/ lib/
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+# Precompile assets (dummy secret for build phase)
+ENV SECRET_KEY_BASE_DUMMY=1 \
+    RAILS_ENV=production
+RUN ./bin/rails assets:precompile && \
+    # Clean up asset build artifacts
+    rm -rf node_modules tmp/cache app/assets/builds/*.map
 
+# =============================================================================
+# STAGE 2: PRODUCTION RUNTIME
+# Minimal Alpine with only runtime dependencies
+# =============================================================================
+FROM docker.io/library/ruby:$RUBY_VERSION-alpine AS runtime
 
+# Install ONLY runtime dependencies - no build tools
+RUN apk add --no-cache \
+    libpq \
+    libyaml \
+    vips \
+    tzdata \
+    curl \
+    tini \
+    && rm -rf /var/cache/apk/* /tmp/*
 
+# Create non-root user for security
+RUN addgroup -g 1000 -S rails && \
+    adduser -u 1000 -S rails -G rails -h /app -s /bin/sh
 
-# Final stage for app image
-FROM base
+WORKDIR /app
 
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
-USER 1000:1000
+# Production environment configuration
+ENV RAILS_ENV="production" \
+    RAILS_LOG_TO_STDOUT="true" \
+    RAILS_SERVE_STATIC_FILES="true" \
+    RUBY_YJIT_ENABLE="1" \
+    MALLOC_ARENA_MAX="2" \
+    PORT="7000" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development:test" \
+    BUNDLE_APP_CONFIG="/app/.bundle"
 
-# Copy built artifacts: gems, application
-COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --chown=rails:rails --from=build /rails /rails
+# Copy gems from builder
+COPY --from=builder --chown=rails:rails /usr/local/bundle /usr/local/bundle
 
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+# Copy application from builder
+COPY --from=builder --chown=rails:rails /app /app
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Switch to non-root user
+USER rails:rails
+
+# Expose port 7000
+EXPOSE 7000
+
+# Health check hitting the app on port 7000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -fsS http://localhost:7000/up || exit 1
+
+# Use tini as init system for proper signal handling
+ENTRYPOINT ["/sbin/tini", "--", "/app/bin/docker-entrypoint"]
+
+# Start Puma directly on port 7000
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb", "-b", "tcp://0.0.0.0:7000"]

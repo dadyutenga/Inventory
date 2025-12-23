@@ -1,51 +1,78 @@
-# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+# =============================================================================
+# DOCKER IGNORE - Minimize build context for faster builds
+# =============================================================================
 
-# Ignore git directory.
+# Version control
 /.git/
 /.gitignore
+/.gitattributes
 
-# Ignore bundler config.
+# Bundler
 /.bundle
 
-# Ignore all environment files.
+# Environment and secrets (NEVER include in image)
 /.env*
-
-# Ignore all default key files.
 /config/master.key
 /config/credentials/*.key
 
-# Ignore all logfiles and tempfiles.
+# Logs and temp files
 /log/*
 /tmp/*
 !/log/.keep
 !/tmp/.keep
 
-# Ignore pidfiles, but keep the directory.
+# PID files
 /tmp/pids/*
 !/tmp/pids/.keep
 
-# Ignore storage (uploaded files in development and any SQLite databases).
+# Storage (user uploads, SQLite)
 /storage/*
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/.keep
 
-# Ignore assets.
+# Assets (rebuilt during docker build)
 /node_modules/
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /public/assets
 
-# Ignore CI service files.
+# CI/CD
 /.github
+/.gitlab-ci.yml
+/.circleci
 
-# Ignore Kamal files.
+# Deployment configs (not needed in image)
 /config/deploy*.yml
 /.kamal
 
-# Ignore development files
+# Development
 /.devcontainer
+/.vscode
+/.idea
+/.ruby-lsp
 
-# Ignore Docker-related files
+# Docker files (prevent recursive context)
 /.dockerignore
 /Dockerfile*
+/docker-compose*.yml
+
+# Testing (excluded from production)
+/test/
+/spec/
+/coverage/
+/.rspec
+
+# Documentation
+/README*
+/CHANGELOG*
+/LICENSE*
+/docs/
+/*.md
+
+# Misc
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

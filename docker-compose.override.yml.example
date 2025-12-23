@@ -1,0 +1,52 @@
+# =============================================================================
+# DOCKER COMPOSE OVERRIDE (Development/Local Customization)
+# =============================================================================
+# Copy this file to docker-compose.override.yml for local development.
+# This file is automatically merged with docker-compose.yml
+#
+#   cp docker-compose.override.yml.example docker-compose.override.yml
+#
+# NEVER commit docker-compose.override.yml to version control!
+# =============================================================================
+
+services:
+  app:
+    # Uncomment to build with different settings
+    # build:
+    #   args:
+    #     RUBY_VERSION: "3.3.1"
+
+    # Override port if 7000 is in use
+    # ports:
+    #   - "7001:7000"
+
+    environment:
+      # Local development secrets (generate with: rails secret)
+      SECRET_KEY_BASE: "your_64_character_secret_key_here_generate_with_rails_secret"
+      
+      # Reduced workers for local testing
+      WEB_CONCURRENCY: 1
+      RAILS_MAX_THREADS: 2
+
+    # Mount local code for development (rebuilds not required)
+    # WARNING: This overrides the built image code!
+    # volumes:
+    #   - .:/app:cached
+    #   - bundle_cache:/usr/local/bundle
+
+  db:
+    # Expose database port for local tools (TablePlus, pgAdmin, etc.)
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "local_dev_password_change_in_production"
+
+  redis:
+    # Expose Redis port for local debugging
+    ports:
+      - "6379:6379"
+
+# Uncomment for development bundle caching
+# volumes:
+#   bundle_cache:
+#     driver: local

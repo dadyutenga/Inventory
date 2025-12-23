@@ -1,0 +1,133 @@
+# =============================================================================
+# PRODUCTION DOCKER COMPOSE
+# =============================================================================
+# Usage:
+#   docker compose up -d              # Start all services
+#   docker compose logs -f app        # Follow app logs
+#   docker compose down               # Stop all services
+#   docker compose down -v            # Stop and remove volumes (DESTRUCTIVE)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # RAILS APPLICATION
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: inventory:latest
+    container_name: inventory_app
+    restart: unless-stopped
+    ports:
+      - "7000:7000"
+    environment:
+      # Required - Override in .env.production or docker-compose.override.yml
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE is required}
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-inventory_production}
+      REDIS_URL: redis://redis:6379/0
+      
+      # Rails configuration
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+      
+      # Puma tuning (adjust based on container memory)
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-3}
+      
+      # Optional: Run Solid Queue in Puma process
+      SOLID_QUEUE_IN_PUMA: ${SOLID_QUEUE_IN_PUMA:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:7000/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    volumes:
+      # Persist Active Storage uploads
+      - storage_data:/app/storage
+      # Persist logs (optional - remove if using log aggregator)
+      - app_logs:/app/log
+    networks:
+      - inventory_network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # POSTGRESQL DATABASE
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: inventory_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-inventory_production}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB:-inventory_production}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - inventory_network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # REDIS (for Action Cable / Caching)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: inventory_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inventory_network
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  storage_data:
+    driver: local
+  app_logs:
+    driver: local
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  inventory_network:
+    driver: bridge

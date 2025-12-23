@@ -1,8 +1,31 @@
-#!/bin/bash -e
+#!/bin/sh
+set -e
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+# =============================================================================
+# PRODUCTION DOCKER ENTRYPOINT
+# Handles database preparation and graceful startup
+# =============================================================================
+
+# Validate required environment variables
+if [ -z "$SECRET_KEY_BASE" ]; then
+  echo "ERROR: SECRET_KEY_BASE environment variable is required" >&2
+  exit 1
 fi
 
-exec "${@}"
+if [ -z "$DATABASE_URL" ]; then
+  echo "ERROR: DATABASE_URL environment variable is required" >&2
+  exit 1
+fi
+
+# Create required directories
+mkdir -p tmp/pids tmp/cache tmp/sockets log
+
+# Database preparation (migrate or create+seed if new)
+echo "Preparing database..."
+bundle exec rails db:prepare
+
+# Clear stale PID files (prevents startup failures after crashes)
+rm -f tmp/pids/server.pid
+
+echo "Starting application..."
+exec "$@"
