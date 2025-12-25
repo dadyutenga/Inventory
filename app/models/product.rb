@@ -68,6 +68,9 @@ class Product < ApplicationRecord
   end
 
   def invalidate_api_cache
+    # Skip cache invalidation if caching is not available or configured
+    return unless Rails.cache.respond_to?(:delete) && caching_enabled?
+
     # Define all possible cache keys to invalidate
     cache_keys = [
       "api:v1:products:all",
@@ -86,7 +89,20 @@ class Product < ApplicationRecord
 
     # Log cache invalidation for debugging
     Rails.logger.info "API cache invalidated for product: #{id}"
+  rescue ActiveRecord::StatementInvalid, PG::UndefinedTable => e
+    # Handle cases where cache tables don't exist yet (during setup/seeding)
+    Rails.logger.warn "Cache invalidation skipped - cache tables not available: #{e.message}"
   rescue => e
     Rails.logger.error "Failed to invalidate API cache: #{e.message}"
+  end
+
+  private
+
+  def caching_enabled?
+    # Check if caching is enabled and cache store is available
+    Rails.application.config.cache_store.present? &&
+    Rails.cache.class.name != "ActiveSupport::Cache::NullStore"
+  rescue
+    false
   end
 end
