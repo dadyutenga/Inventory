@@ -68,8 +68,21 @@ class Product < ApplicationRecord
   end
 
   def invalidate_api_cache
-    # Invalidate all product cache keys
-    Rails.cache.delete_matched("api:v1:products*")
+    # Define all possible cache keys to invalidate
+    cache_keys = [
+      "api:v1:products:all",
+      "api:v1:products:laptop",
+      "api:v1:products:mouse",
+      "api:v1:products:keyboard",
+      "api:v1:products:server",
+      "api:v1:products:desktop_pc",
+      "api:v1:products:accessory"
+    ]
+
+    # Delete each cache key individually (SolidCache compatible)
+    cache_keys.each do |key|
+      Rails.cache.delete(key)
+    end
 
     # Log cache invalidation for debugging
     Rails.logger.info "API cache invalidated for product: #{id}"
